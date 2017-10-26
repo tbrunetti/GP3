@@ -21,7 +21,9 @@ The following are the minimum software requirements:
 
 
 __*--R libraries that need to be installed manually--*__  
-The following list of R libraries must be installed and functional:
+The following list of R libraries, including their dependencies must be installed and functional:  
+  * GENESIS (http://bioconductor.org/packages/release/bioc/html/GENESIS.html)
+  * GWASTools (http://bioconductor.org/packages/release/bioc/html/GWASTools.html)
 
 
 __*--Software Requirements that can be installed automatically--*__  
