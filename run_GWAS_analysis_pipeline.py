@@ -263,10 +263,10 @@ class Pipeline(BasePipeline):
 								)
 							# below plink call returns file of the missingness calls PRIOR to removing samples failing genotyping call threshold
 							general_plink.run(
-                            	Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered'),
-                            	Parameter('--missing'),
-                            	Parameter('--out', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered')
-                            	)
+								Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered'),
+								Parameter('--missing'),
+								Parameter('--out', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered')
+								)
 							# below plink call for LD pruning
 							general_plink.run(
 								Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered_sampleMissFiltered'),
@@ -275,9 +275,9 @@ class Pipeline(BasePipeline):
 								)
 							
 							missingness_table = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered.imiss', delim_whitespace=True)
-                        	get_missing = missingness_table.loc[missingness_table['F_MISS'].astype(float) > pipeline_args['sampleMiss']]
-                        	get_missing[['FID', 'IID']].to_csv(samples_missing.name, sep='\t', index=False, header=False)
-                        	samples_missing.close()
+							get_missing = missingness_table.loc[missingness_table['F_MISS'].astype(float) > pipeline_args['sampleMiss']]
+							get_missing[['FID', 'IID']].to_csv(samples_missing.name, sep='\t', index=False, header=False)
+							samples_missing.close()
 
 							total_snps_analyzed_ld = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered_sampleMissFiltered.bim'])
 							total_snps_passing_ld = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '.prune.in'])
@@ -317,10 +317,9 @@ class Pipeline(BasePipeline):
 								)
 
 							missingness_table = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered.imiss', delim_whitespace=True)
-                        	get_missing = missingness_table.loc[missingness_table['F_MISS'].astype(float) > pipeline_args['sampleMiss']]
-                        	get_missing[['FID', 'IID']].to_csv(samples_missing.name, sep='\t', index=False, header=False)
-                        	samples_missing.close()
-
+							get_missing = missingness_table.loc[missingness_table['F_MISS'].astype(float) > pipeline_args['sampleMiss']]
+							get_missing[['FID', 'IID']].to_csv(samples_missing.name, sep='\t', index=False, header=False)
+							samples_missing.close()
 
 							total_snps_analyzed_ld = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered_sampleMissFiltered.bim'])
 							total_snps_passing_ld = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '.prune.in'])
@@ -608,14 +607,20 @@ class Pipeline(BasePipeline):
 
 				step_order.pop(0)
 
+		print "writing results to PDF"
+		paramsThresh = summary_stats.parameters_and_thresholds(params=pipeline_args)
 
+
+		# output PDFs -- need to make this compatible with --reanalyze
+		# put these under each of the steps
+		paramsThresh.output(outdir + '/' + pipeline_args['projectName'] + '_parameters_and_thresholds.pdf', 'F') # output results to PDF
 
 				
 			
 
 
 
-
+'''
 
 
 			# ------------------------------------everything below this line can *probably* be removed (wait to remove until new pipeline is created)-----------------------------------------
@@ -692,11 +697,5 @@ class Pipeline(BasePipeline):
 				
 				step_order.pop(0)
 		
-		print "writing results to PDF"
-		paramsThresh = summary_stats.parameters_and_thresholds(params=pipeline_args)
 
-
-		
-		# output PDFs -- need to make this compatible with --reanalyze
-		# put these under each of the steps
-		paramsThresh.output(outdir + '/' + pipeline_args['projectName'] + '_parameters_and_thresholds.pdf', 'F') # output results to PDF
+'''
