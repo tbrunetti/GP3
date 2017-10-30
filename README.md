@@ -6,7 +6,7 @@ GWAS Pre-Processing Pipeline
 An automated pipeline to pre-process GWAS data to determine samples to remove prior to input into imputation pipelines and association testing pipelines.  This should be used after initial round of QC/filtering has been performed (i.e. removing SNPs and samples that fail due to poor snp/sample quality from idats).
 
 <p align="center">
-<img src="https://github.com/tbrunetti/GP3/blob/master/images/GP3_pipeline_workflow.png" />
+<img src="https://github.com/tbrunetti/GP3/blob/master/images/GP3_pipeline_workflow_updated.png" />
 </p>
 
 ## Software Requirements
