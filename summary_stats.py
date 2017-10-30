@@ -188,7 +188,7 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population
 		pass_het = het_dataframe.loc[((het_dataframe['het_score'] <= max_value) | (het_dataframe['het_score'] >= min_value))]
 		pass_het['Group'] = 'After'
 		
-		combine = pd.concat(['het_dataframe', 'pass_het']) # concantenates dataframes before and after filterings to make boxplot comparisons by Group
+		combine = pd.concat([het_dataframe, pass_het]) # concantenates dataframes before and after filterings to make boxplot comparisons by Group
 		het_dataframe.plot(kind='box', x='Group', y='het_score', title='Heterozygosity Scores')
 		plt.tight_layout(pad=2, w_pad=2, h_pad=2)
 		plt.savefig(outDir+'/'+ str(population) +'_heterozygosity_plot.png')
