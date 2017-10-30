@@ -164,10 +164,11 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population
 		pdf.multi_cell(0, 5, '\n', 0, 1, 'J')
 		pdf.set_font('Arial', 'B', 16)
 		pdf.set_fill_color(200)
+		
 		pdf.multi_cell(0, 8, 'Total Number Samples Analyed: '+ str(len(het_dataframe.index)), 1, 'L', True)
 		pdf.set_x(30)
 		pdf.multi_cell(0, 8, 'Total Number Samples Failing: '+ str(len(fail_het.index)), 1, 1, 'L')
-
+		pdf.multi_cell(0, 8, str(population), 1, 'L', True)
 		het_dataframe.plot(kind='scatter', x='rank', y='F', title='Ranked Inbreeding Coefficient scores', s=7)
 		plt.tight_layout(pad=2, w_pad=2, h_pad=2)
 		plt.savefig(outDir+'/'+ str(population) + '_heterozygosity_plot.png')
@@ -189,7 +190,7 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population
 		pass_het['Group'] = 'After'
 		
 		combine = pd.concat([het_dataframe, pass_het]) # concantenates dataframes before and after filterings to make boxplot comparisons by Group
-		het_dataframe.plot(kind='box', x='Group', y='het_score', title='Heterozygosity Scores')
+		combine.plot(kind='box', x='Group', y='het_score', title='Heterozygosity Scores')
 		plt.tight_layout(pad=2, w_pad=2, h_pad=2)
 		plt.savefig(outDir+'/'+ str(population) +'_heterozygosity_plot.png')
 		plt.close()
@@ -202,6 +203,7 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population
 		pdf.multi_cell(0, 5, '\n', 0, 1, 'J')
 		pdf.set_font('Arial', 'B', 16)
 		pdf.set_fill_color(200)
+		pdf.multi_cell(0, 8, str(population), 1, 'L', True)
 		pdf.multi_cell(0, 8, 'Total Number Samples Analyed: '+ str(len(het_dataframe.index)), 1, 'L', True)
 		pdf.set_x(30)
 		pdf.multi_cell(0, 8, 'Total Number Samples Failing: '+ str(len(fail_het.index)), 1, 1, 'L')
