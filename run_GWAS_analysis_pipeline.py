@@ -401,7 +401,8 @@ class Pipeline(BasePipeline):
 
 			elif step_order[0] == 'het':
 				print "checking heterozygosity"
-				
+				het_pdf_merge = PyPDF2.PdfFileMerger() # PDF merge object
+				clean_up = []
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 
@@ -415,8 +416,8 @@ class Pipeline(BasePipeline):
 
 						het_dataframe = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_greater_than_'+str(pipeline_args['maf'])+'_maf.het', delim_whitespace=True)
 						# het_score calculates the heterozygosity score by the following calculation: 1-[oberserved(HOM)/total]
-						het_dataframe['het_score'] = 1-(float(het_dataframe['O(HOM)'])/float(het_dataframe['N(NM)']))
-						samples_failing_het, het_pdf = summary_stats.heterozygosity(het_method= pipeline_args['hetMethod'], std=pipeline.args['het_std'], het_dataframe = het_dataframe, thresh = pipeline_args['hetThresh'], minThresh=pipeline_args['hetThreshMin'],outDir = outdir)
+						het_dataframe['het_score'] = 1-(het_dataframe['O(HOM)'].astype(float)/het_dataframe['N(NM)'].astype(float))
+						samples_failing_het, het_pdf = summary_stats.heterozygosity(het_method= pipeline_args['hetMethod'], std=pipeline_args['het_std'], het_dataframe = het_dataframe, thresh = pipeline_args['hetThresh'], minThresh=pipeline_args['hetThreshMin'], population=directories, outDir = outdir)
 						
 						general_plink.run(
 							Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_greater_than_'+str(pipeline_args['maf'])+'_maf'),
@@ -426,8 +427,16 @@ class Pipeline(BasePipeline):
 							)
 					
 						
-						het_pdf.output(outdir + '/' + pipeline_args['projectName'] + directories + '_hetStats.pdf', 'F') # output results to PDF
+						het_pdf.output(outdir + '/' + pipeline_args['projectName'] + '_' + directories + '_hetStats.pdf', 'F') # output results to PDF
+						clean_up.append(outdir + '/' + pipeline_args['projectName'] + '_' + directories + '_hetStats.pdf')
+						het_pdf_merge.append(pdfs)
+				
+				het_pdf_merge.write(outdir + '/' + pipeline_args['projectName'] + '_hetStats.pdf')
+				het_pdf_merge.close()
 
+				for delete_pdfs in clean_up: # remove individual pdfs after merging with final pdf
+					subprocess.call(['rm', '-rf', delete_pdfs])
+				
 				step_order.pop(0)
 				
 
@@ -437,6 +446,8 @@ class Pipeline(BasePipeline):
 			elif step_order[0] == 'ibd':
 				# only gets run on the bed file with MAF > specified tresh
 				print "running PLINK ibd step"
+				ibd_pdf_merge = PyPDF2.PdfFileMerger() # PDF merge object
+				clean_up = []
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 
@@ -459,6 +470,15 @@ class Pipeline(BasePipeline):
 							)
 						
 						relatedness_stats.output(outdir + '/' + pipeline_args['projectName'] + '_' + directories + '_relatedness.pdf', 'F') # output results to PDF
+						clean_up.append(outdir + '/' + pipeline_args['projectName'] + '_' + directories + '_relatedness.pdf')
+						ibd_pdf_merge.append(pdfs)
+				
+				ibd_pdf_merge.write(outdir + '/' + pipeline_args['projectName'] + '_relatedness.pdf') # merge all pds together
+				ibd_pdf_merge.close()
+
+				for delete_pdfs in clean_up: # deletes individual pdfs already concatenated together in final ibd pdf
+					subprocess.call(['rm', '-rf', delete_pdfs])
+
 				step_order.pop(0)
 	
 
