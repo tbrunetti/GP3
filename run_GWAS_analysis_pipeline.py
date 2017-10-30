@@ -173,7 +173,7 @@ class Pipeline(BasePipeline):
 				)
 		else:
 			step_order = self.check_steps(
-				order = ['hwe', 'LD', 'maf', 'het', 'ibd', 'PCA_indi'], 
+				order = ['hwe', 'LD', 'maf', 'het', 'ibd', 'PCA_indi', 'PCA_indi_graph'], 
 				start = pipeline_args['startStep'],
 				stop = pipeline_args['endStep']
 				)			
@@ -242,6 +242,10 @@ class Pipeline(BasePipeline):
 				
 				hwe_stats = summary_stats.hwe(dictHWE=hwe_passing, thresh=pipeline_args['hweThresh'], outDir = outdir)
 				hwe_stats.output(outdir + '/' + pipeline_args['projectName'] + '_hweStats.pdf', 'F') # output results to PDF
+				
+				for directories in os.listdir(outdir): # delete individual hwe images 
+					if (os.path.isdir(os.path.join(outdir, directories))):
+						subprocess.call(['rm', '-rf', 'hwe_'+str(directories)+'.png'])
 				step_order.pop(0)
 
 			
@@ -612,8 +616,10 @@ class Pipeline(BasePipeline):
 				for job in processes:
 					job.wait() # wait for all parallel jobs to finish before proceeding to next step
 
-
+				step_order.pop(0)
 		
+		elif step_order[0] == "PCA_indi_graph":
+
 				print "graphing PCA plots"
 
 				graphing_processes = []
