@@ -136,7 +136,7 @@ def minor_allele_freq(dictMAF, thresh):
 
 	return pdf
 
-def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, outDir):
+def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population, outDir):
 	pdf = FPDF() # create new PDF
 	pdf.add_page()
 	pdf.set_margins(20, 10, 20)
@@ -145,7 +145,7 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, outDir):
 	pdf.multi_cell(0, 30, "Heterozygosity", 0, 1, 'L')
 	pdf.line(20, 32, 190, 32)
 
-	sample_fails = open(outDir + '/samples_failing_heterozygosity.txt', 'w')
+	sample_fails = open(outDir + '/' + population + '/samples_failing_heterozygosity.txt', 'w')
 	#het_method of setting min and max thresholds based on F score inbreeding coefficient
 	if het_method == 'minMax':
 		fail_het = het_dataframe.loc[((het_dataframe['F'] > thresh) | (het_dataframe['F'] < minThresh))]
@@ -170,9 +170,9 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, outDir):
 
 		het_dataframe.plot(kind='scatter', x='rank', y='F', title='Ranked Inbreeding Coefficient scores', s=7)
 		plt.tight_layout(pad=2, w_pad=2, h_pad=2)
-		plt.savefig(outDir+'/'+'heterozygosity_plot.png')
+		plt.savefig(outDir+'/'+ str(population) + '_heterozygosity_plot.png')
 		plt.close()
-		pdf.image(outDir+'/'+'heterozygosity_plot.png', x=10, y=130, w=190, h=150)
+		pdf.image(outDir+'/'+ str(population) + '_heterozygosity_plot.png', x=10, y=130, w=190, h=150)
 
 		sample_fails.flush()
 		sample_fails.close()
@@ -191,7 +191,7 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, outDir):
 		combine = pandas.concat(['het_dataframe', 'pass_het']) # concantenates dataframes before and after filterings to make boxplot comparisons by Group
 		het_dataframe.plot(kind='box', x='Group', y='het_score', title='Heterozygosity Scores')
 		plt.tight_layout(pad=2, w_pad=2, h_pad=2)
-		plt.savefig(outDir+'/'+'heterozygosity_plot.png')
+		plt.savefig(outDir+'/'+ str(population) +'_heterozygosity_plot.png')
 		plt.close()
 
 		# generate PDF of heterozygosity results
@@ -205,7 +205,7 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, outDir):
 		pdf.multi_cell(0, 8, 'Total Number Samples Analyed: '+ str(len(het_dataframe.index)), 1, 'L', True)
 		pdf.set_x(30)
 		pdf.multi_cell(0, 8, 'Total Number Samples Failing: '+ str(len(fail_het.index)), 1, 1, 'L')
-		pdf.image(outDir+'/'+'heterozygosity_plot.png', x=10, y=130, w=190, h=150)
+		pdf.image(outDir+'/'+ str(population) +'_heterozygosity_plot.png', x=10, y=130, w=190, h=150)
 	
 		sample_fails.flush()
 		sample_fails.close()
