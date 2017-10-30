@@ -246,6 +246,7 @@ class Pipeline(BasePipeline):
 				for directories in os.listdir(outdir): # delete individual hwe images 
 					if (os.path.isdir(os.path.join(outdir, directories))):
 						subprocess.call(['rm', '-rf', 'hwe_'+str(directories)+'.png'])
+				
 				step_order.pop(0)
 
 			
@@ -618,7 +619,7 @@ class Pipeline(BasePipeline):
 
 				step_order.pop(0)
 		
-		elif step_order[0] == "PCA_indi_graph":
+			elif step_order[0] == "PCA_indi_graph":
 
 				print "graphing PCA plots"
 
