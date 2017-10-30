@@ -434,7 +434,7 @@ class Pipeline(BasePipeline):
 						
 						het_pdf.output(outdir + '/' + pipeline_args['projectName'] + '_' + directories + '_hetStats.pdf', 'F') # output results to PDF
 						clean_up.append(outdir + '/' + pipeline_args['projectName'] + '_' + directories + '_hetStats.pdf')
-						het_pdf_merge.append(pdfs)
+						het_pdf_merge.append(outdir + '/' + pipeline_args['projectName'] + '_' + directories + '_hetStats.pdf')
 				
 				het_pdf_merge.write(outdir + '/' + pipeline_args['projectName'] + '_hetStats.pdf')
 				het_pdf_merge.close()
@@ -476,7 +476,7 @@ class Pipeline(BasePipeline):
 						
 						relatedness_stats.output(outdir + '/' + pipeline_args['projectName'] + '_' + directories + '_relatedness.pdf', 'F') # output results to PDF
 						clean_up.append(outdir + '/' + pipeline_args['projectName'] + '_' + directories + '_relatedness.pdf')
-						ibd_pdf_merge.append(pdfs)
+						ibd_pdf_merge.append(outdir + '/' + pipeline_args['projectName'] + '_' + directories + '_relatedness.pdf')
 				
 				ibd_pdf_merge.write(outdir + '/' + pipeline_args['projectName'] + '_relatedness.pdf') # merge all pds together
 				ibd_pdf_merge.close()
