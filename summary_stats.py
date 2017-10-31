@@ -181,8 +181,8 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population
 	elif het_method == 'meanStd':
 		het_mean = het_dataframe['het_score'].mean() # calculates the mean of the calculated het_score across all samples
 		het_std = het_dataframe['het_score'].std() # calculated the standard deviation of the calculated het_score across all samples
-		max_value = het_mean + (int(std)*het_std) # gets the max acceptable het_score give the number of standard deviations allowed from the mean set by the user
-		min_value = het_mean - (int(std)*het_std) # gets the min acceptable het_score give the number of standard deviations allowed from the mean set by the user
+		max_value = het_mean + (float(std)*het_std) # gets the max acceptable het_score give the number of standard deviations allowed from the mean set by the user
+		min_value = het_mean - (float(std)*het_std) # gets the min acceptable het_score give the number of standard deviations allowed from the mean set by the user
 		fail_het = het_dataframe.loc[((het_dataframe['het_score'] > max_value) | (het_dataframe['het_score'] < min_value))]
 		fail_het[['FID', 'IID']].to_csv(sample_fails.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
 		pass_het = het_dataframe.loc[((het_dataframe['het_score'] <= max_value) & (het_dataframe['het_score'] >= min_value))]
