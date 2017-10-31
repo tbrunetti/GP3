@@ -164,7 +164,7 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population
 		pdf.multi_cell(0, 5, '\n', 0, 1, 'J')
 		pdf.set_font('Arial', 'B', 16)
 		pdf.set_fill_color(200)
-
+		pdf.multi_cell(0, 8, str(population), 1, 'L', True)
 		pdf.multi_cell(0, 8, 'Total Number Samples Analyed: '+ str(len(het_dataframe.index)), 1, 'L', True)
 		pdf.set_x(30)
 		pdf.multi_cell(0, 8, 'Total Number Samples Failing: '+ str(len(fail_het.index)), 1, 1, 'L')
@@ -183,12 +183,12 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population
 		het_std = het_dataframe['het_score'].std() # calculated the standard deviation of the calculated het_score across all samples
 		max_value = het_mean + (int(std)*het_std) # gets the max acceptable het_score give the number of standard deviations allowed from the mean set by the user
 		min_value = het_mean - (int(std)*het_std) # gets the min acceptable het_score give the number of standard deviations allowed from the mean set by the user
-		het_dataframe['Group'] = 'Before'
 		fail_het = het_dataframe.loc[((het_dataframe['het_score'] > max_value) | (het_dataframe['het_score'] < min_value))]
 		fail_het[['FID', 'IID']].to_csv(sample_fails.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
-		pass_het = het_dataframe.loc[((het_dataframe['het_score'] <= max_value) | (het_dataframe['het_score'] >= min_value))]
+		pass_het = het_dataframe.loc[((het_dataframe['het_score'] <= max_value) & (het_dataframe['het_score'] >= min_value))]
 		pass_het['Group'] = 'After'
-		
+		het_dataframe['Group'] = 'Before'
+
 		combine = pd.concat([het_dataframe, pass_het]) # concantenates dataframes before and after filterings to make boxplot comparisons by Group
 		combine.boxplot(by='Group', column='het_score')
 		plt.tight_layout(pad=2, w_pad=2, h_pad=2)
@@ -207,6 +207,10 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population
 		pdf.multi_cell(0, 8, 'Total Number Samples Analyed: '+ str(len(het_dataframe.index)), 1, 'L', True)
 		pdf.set_x(30)
 		pdf.multi_cell(0, 8, 'Total Number Samples Failing: '+ str(len(fail_het.index)), 1, 1, 'L')
+		pdf.set_x(30)
+		pdf.multi_cell(0, 8, 'Mean (Before): '+ str("{0:.5f}".format(round(het_mean,5))), 1, 1, 'L')
+		pdf.set_x(30)
+		pdf.multi_cell(0, 8, 'Mean (After): '+ str("{0:.5f}".format(round(pass_het['het_score'].mean(),5))), 1, 1, 'L')
 		pdf.image(outDir+'/'+ str(population) +'_heterozygosity_plot.png', x=10, y=130, w=190, h=150)
 	
 		sample_fails.flush()
@@ -231,6 +235,7 @@ def relatedness(ibd_dataframe, outDir):
 
 	pdf.set_font('Arial', 'B', 16)
 	pdf.set_fill_color(200)
+	pdf.multi_cell(0, 8, str(population), 1, 'L', True)
 	pdf.multi_cell(0, 10, 'Total Number of Sample Pairs Analyzed:  ' +  str(len(ibd_dataframe.index)), 1, 'L', True)
 
 	
