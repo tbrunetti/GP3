@@ -47,7 +47,7 @@ class Pipeline(BasePipeline):
 		parser.add_argument('--stepSize', default=5, type=int, help='[default=5] variant count to shift window after each interation')
 		parser.add_argument('--maf', default=0.05, type=float, help='[default=0.05], filter remaining LD pruned variants by MAF')
 		parser.add_argument('--hetMethod', default='minMax', type=str, help='[default=minMax], method to use to determine heterozygosity filtering options:  minMax, meanStd')
-		parser.add_argument('--het_std', default=3, type=int, help='[default=3] if using hetMethod=meanStd you can determine how many standard deviations aways from the mean is allowable for heterozygosity.  \
+		parser.add_argument('--het_std', default=3, type=float, help='[default=3] if using hetMethod=meanStd you can determine how many standard deviations aways from the mean is allowable for heterozygosity.  \
 																	Setting to 3 is interpreted as +/-3 standard deviations away from the mean of the het_score, calculated as 1-[observed(HOM)/total]')
 		parser.add_argument('--hetThresh', default=0.10, type=float, help='[default=0.10], filter out samples where inbreeding coefficient is greater than threshold (heterozygosity filtering)')
 		parser.add_argument('--hetThreshMin', default=-0.10, type=float, help='[default= -0.10] filter out samples where inbreeding coefficient is samller than min threshold set (heterozygosity filtering)')
