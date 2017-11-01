@@ -467,7 +467,7 @@ class Pipeline(BasePipeline):
 							)
 						
 						ibd_results = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered.genome', delim_whitespace=True)
-						relatedness_stats, remove_samples = summary_stats.relatedness(ibd_dataframe = ibd_results, outDir=outdir+'/'+directories)
+						relatedness_stats, remove_samples = summary_stats.relatedness(ibd_dataframe = ibd_results, population=directories, outDir=outdir+'/'+directories)
 
 						# remove samples that are duplicates
 						general_plink.run(
