@@ -219,7 +219,7 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population
 	return sample_fails.name, pdf
 
 
-def relatedness(ibd_dataframe, outDir):
+def relatedness(ibd_dataframe, population, outDir):
 	
 	dups_text = open(outDir + '/' + 'duplicate_pairs.txt', 'w') # outputs pairs with Z0, Z1, Z2	score
 	remove_dups = open(outDir + '/remove_all_duplicate_pairs.txt', 'w') # outputs duplicate samples for PLINK formalt removal
