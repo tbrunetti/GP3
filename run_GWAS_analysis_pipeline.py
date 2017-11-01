@@ -564,6 +564,8 @@ class Pipeline(BasePipeline):
 				for job in processes:
 					job.wait() # wait for all parallel jobs to finish before proceeding to next step
 
+				step_order.pop(0)
+
 			elif step_order[0] == "PCA_TGP_graph":
 				
 				print "graphing PCA plots"
