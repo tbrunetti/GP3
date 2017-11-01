@@ -3,6 +3,7 @@ load_file <- args[1] # GENESIS PCA R object scanAnnot dataframe
 cohort <- args[2]
 outDir_path <- args[4]
 library("GENESIS", lib.loc = args[3])
+library("GWASTools", lib.loc = args[3])
 TGP_pop_file = args[5] # full path including file name of sup_sub TGP population file
 center_population = args[6] # must be a population (case sensitive) in the TGP population file or the cohort using
 
@@ -56,7 +57,7 @@ subset_dataframe = subset(tgp_combined, population==population_name)
 
 cols = list()
 potential_TGP_cols <- c("blue", "green", "orange", "yellow", "red", "brown")
-color_order <- c(levels(as.factor(TEST$population)))
+color_order <- c(levels(as.factor(tgp_combined$population)))
 index_of_cohort <- which(color_order %in% population_name)
 total_pops <- length(color_order)
 added_cohort = 0 # turns to 1 if cohort has been added to list so can utilize all potential TGP colors
