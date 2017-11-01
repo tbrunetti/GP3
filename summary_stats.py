@@ -199,7 +199,7 @@ def heterozygosity(het_method, std, het_dataframe, thresh, minThresh, population
 		pdf.set_font('Arial', '', 12)
 		pdf.multi_cell(0, 5, 'Heterozygosity is calculated on the merged sample space.  Samples with extreme levels of heterozygosity as measured by \
 			the heterozygosity score calculated using the following formula: het_score = 1 - [O(HOM)/N(NM)], may be indicative of a sample exhibiting poor quality.  The current het_score thresholds \
-			are set to filter out any samples exhibiting excess heterozygosity of +/- ' + str(std) + ' from the mean het_score.' , 0, 1, 'J')
+			are set to filter out any samples exhibiting excess heterozygosity of +/- ' + str(std) + ' standard deviations from the mean het_score.' , 0, 1, 'J')
 		pdf.multi_cell(0, 5, '\n', 0, 1, 'J')
 		pdf.set_font('Arial', 'B', 16)
 		pdf.set_fill_color(200)
