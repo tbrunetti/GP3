@@ -47,7 +47,6 @@ subset_data['subset_Prop_variance'] <- data.frame(subset_data$eigenvalues/subset
 plot(subset_data$PC, subset_data$subset_Prop_variance, col="black", pch=20, cex=1,ylab="Proportion of Variance Explained",xlab="PCs",xaxt="n")
 axis(1,at=subset_data$PC,labels=subset_data$PC)
 
-population_name = "BASS"
 # Assign experimental vs TGP
 tgp_combined$group[tgp_combined$population==population_name] <- population_name
 tgp_combined$group[tgp_combined$population!=population_name] <- "TGP"
