@@ -170,7 +170,7 @@ class Pipeline(BasePipeline):
 		# determine what steps need to be performed
 		if pipeline_args['TGP'] == True:
 			step_order = self.check_steps(
-				order = ['hwe', 'LD', 'maf', 'het', 'ibd', 'PCA_TGP'], 
+				order = ['hwe', 'LD', 'maf', 'het', 'ibd', 'PCA_TGP', 'PCA_TGP_graph'], 
 				start = pipeline_args['startStep'],
 				stop = pipeline_args['endStep']
 				)
@@ -564,6 +564,7 @@ class Pipeline(BasePipeline):
 				for job in processes:
 					job.wait() # wait for all parallel jobs to finish before proceeding to next step
 
+			elif step_order[0] == "PCA_TGP_graph":
 				
 				print "graphing PCA plots"
 
