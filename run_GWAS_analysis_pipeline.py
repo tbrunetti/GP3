@@ -27,6 +27,9 @@ class Pipeline(BasePipeline):
 			},
 			'R_libraries':{
 				'path': 'Full path to directory where R libraries are stored'
+			},
+			'TGP_populations':{
+				'path': 'Full path including file name of the TGP_Sub_and_SuperPopulation_info.txt file'
 			}
 		}
 
@@ -55,8 +58,8 @@ class Pipeline(BasePipeline):
 		#parser.add_argument('--usePCs', default='pc1,pc2,pc3', type=str, help='[default: pc1,pc2,pc3], the user can pass any pc from 1-20 in a comma separated list to regress out in the GENanalysis step; must be used with --reanalyze flag; format should be the following: pc1,pc2,pc3,pc5')
 		parser.add_argument('--sampleMiss', default=0.03, type=float, help='[default: 0.03] Maximum missingness of genotype call in sample before it should be filtered out.  Float between 0-1, where 0 is no missing, and 1 is all missing (0.03 is interpreted as 3 percent of calls are missing)')
 		parser.add_argument('--snpMiss', default=0.03, type=float, help='[default: 0.03] Maximum missingness of genotype call in a SNP cluster before it should be filtered out.  Float between 0-1, where 0 is no missing, and 1 is all missing (0.03 is interpreted as 3 percent of calls are missing)')
-		parser.add_argument('--TGP', action='store_true', help='specifying this flag means to generate PCA plots with TGP data merged into the given cohort data set')
-
+		parser.add_argument('--TGP', action='store_true', help='specifying this flag means to generate PCA plots with TGP data merged into the given cohort data set for the 5 superpopulations in TGP (AFR, AMR, EAS, EUR, SAS)')
+		parser.add_argument('--centerPop', default='myGroup', type=str, help="when using the TGP flag, you have the option to specify which population cohort that PCs should be centered around for boxplots.  By default this is set to your group(s).  You can pick a TGP super population listed in the TGP_Sub_and_SuperPopulation_info.txt file. CASE SENSITIVE!")
 	
 	@staticmethod
 	def check_steps(order, start, stop):
@@ -564,8 +567,19 @@ class Pipeline(BasePipeline):
 				
 				print "graphing PCA plots"
 
-				### PLOT PCs HERE###
-				## TO DO ##
+				graphing_processes = []
+				for directories in os.listdir(outdir):					
+					if (os.path.isdir(os.path.join(outdir, directories))):
+						if pipeline_args['centerPop'] == 'myGroup':
+							center_pop = str(directories)
+						else:
+							center_pop = pipeline_args['centerPop']
+						#Popen should launch jobs in parallel for producing PDFs of graphs for each cohort
+						graphing_processes.append(subprocess.Popen(['Rscript', 'PCA_TGP.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_thousGen_GENESIS', str(directories), pipeline_config['R_libraries']['path'], outdir + '/' + directories + '/',
+																		pipeline_config['TGP_populations']['path'], center_pop]))
+
+				for pdfs in graphing_processes:
+					pdfs.wait() # wait for all parallel jobs to finish
 
 				step_order.pop(0)
 
