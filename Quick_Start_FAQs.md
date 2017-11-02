@@ -7,16 +7,16 @@ chunky run run_GWAS_analysis_pipeline.py -inputPLINK <myPlink.bed/.ped> -phenoFi
 This will run through all the default parameters of the pipeline from HWE through graphing PCAs (noTGP).  By running the above command the following flow will occur:  
 1.  Output directory is current working directory and the project name is set to date and time stamp **[--outDir, --projectName]**
 2.  Split out all ethnicies separately (the subsequent steps are recalculated for each individual ethnic group listed in the sample_sheet_template.xlsx)  
-   <p align="center">**FOR EACH ETHNIC GROUP CALCULATE AND FILTER:**</p>  
-3.  remove snps below 97% call rate **[--snpMiss]**
-4.  remove snps with HWE less than 1e-6 **[--hweThresh]**
-5.  remove samples below 97% call rate **[--sampleMiss]**
-6.  LD prune snps using method *indep* with rsq of 0.50 and window size of 50, step size of 5 **[--LDmethod, --VIF, --rsq, --windowSize, --stepSize]**
-7.  remove snps with MAF <= 0.05 **[--maf]**
-8.  remove samples with *minMax* with  excess heterozygosity of F-inbreeding coefficient > 0.10 or F-inbreeing coefficient < -0.10 **[--hetMethod, --hetTresh, --hetThreshMin, --het\_std]**
-9.  perform IBD and remove true duplicate samples
-10.  PCA **without** TGP for each group using GENESIS
-11. graph each group with PCA screen plots and boxplots
+   <p align="center">FOR EACH ETHNIC GROUP CALCULATE AND FILTER:</p>  
+3.  remove snps below 97% call rate **[--snpMiss]**  
+4.  remove snps with HWE less than 1e-6 **[--hweThresh]**  
+5.  remove samples below 97% call rate **[--sampleMiss]**  
+6.  LD prune snps using method *indep* with rsq of 0.50 and window size of 50, step size of 5 **[--LDmethod, --VIF, --rsq, --windowSize, --stepSize]**  
+7.  remove snps with MAF <= 0.05 **[--maf]**  
+8.  remove samples with *minMax* with  excess heterozygosity of F-inbreeding coefficient > 0.10 or F-inbreeing coefficient < -0.10 **[--hetMethod, --hetTresh, --hetThreshMin, --het\_std]**  
+9.  perform IBD and remove true duplicate samples  
+10.  PCA **without** TGP for each group using GENESIS  
+11. graph each group with PCA screen plots and boxplots  
 12. generate a list of samples to remove  
 
 
@@ -30,16 +30,16 @@ This will run through all the default parameters of the pipeline from HWE throug
 1.  Output directory is current working directory and the project name is set to data and time stamp **[--outDir, --projectName]**  
 2.  Split out all ethnicies separately (the subsequent steps are recalculated for each individual ethnic group listed in the sample_sheet_template.xlsx)
   <p align="center">**FOR EACH ETHNIC GROUP CALCULATE AND FILTER:**</p>  
-3.  remove snps below 97% call rate **[--snpMiss]**
-4.  remove snps with HWE less than 1e-6 **[--hweThresh]**
-5.  remove samples below 97% call rate **[--sampleMiss]**
-6.  LD prune snps using method *indep* with rsq of 0.50 and window size of 50, step size of 5 **[--LDmethod, --VIF, --rsq, --windowSize, --stepSize]**
-7.  remove snps with MAF <= 0.05 **[--maf]**
-8.  remove samples with method *minMax* with excess heterozygosity of F-inbreeding coefficient > 0.10 or F-inbreeding coefficient < -0.10 **[--hetMethod, --hetThresh, --hetThreshMin, --het\_std]**
-9.  perform IBD and remove true duplicate samples
-10. Merge TGP samples with input samples and only take common snps between groups **[--TGP]**
-11. PCA **including** TGP for each group using GENESIS 
-12. graph each group with PCA screen plots and boxplots with mean and standard deviations centered around each input cohort **[--centerPop]** 
+3.  remove snps below 97% call rate **[--snpMiss]**  
+4.  remove snps with HWE less than 1e-6 **[--hweThresh]**  
+5.  remove samples below 97% call rate **[--sampleMiss]**  
+6.  LD prune snps using method *indep* with rsq of 0.50 and window size of 50, step size of 5 **[--LDmethod, --VIF, --rsq, --windowSize, --stepSize]**  
+7.  remove snps with MAF <= 0.05 **[--maf]**  
+8.  remove samples with method *minMax* with excess heterozygosity of F-inbreeding coefficient > 0.10 or F-inbreeding coefficient < -0.10 **[--hetMethod, --hetThresh, --hetThreshMin, --het\_std]**  
+9.  perform IBD and remove true duplicate samples  
+10. Merge TGP samples with input samples and only take common snps between groups **[--TGP]**  
+11. PCA **including** TGP for each group using GENESIS   
+12. graph each group with PCA screen plots and boxplots with mean and standard deviations centered around each input cohort **[--centerPop]**   
 13. generate a list of samples to remove
 
 
