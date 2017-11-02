@@ -7,6 +7,9 @@ library("GWASTools", lib.loc = args[3])
 TGP_pop_file = args[5] # full path including file name of sup_sub TGP population file
 center_population = args[6] # must be a population (case sensitive) in the TGP population file or the cohort using
 
+load("/home/brunettt/GENESIS_VIF2_MAF01/1000_genomes_GENESIS/CAAPA_MEGA_pass_QC_removed_failures_include_Peru_African_American_maf_greater_thresh_hetFiltered_dups_removed_thousGen_GENESIS")
+cohort="BASS"
+TGP_info <- read.table("Sub_and_SuperPopulation_info.txt", header=T)
 # loaded from genesis setup script in GWAS_analysis_pipeline.py
 load(paste(load_file)) 
 get_dataframe <- pData(scanAnnot)
@@ -51,6 +54,7 @@ axis(1,at=subset_data$PC,labels=subset_data$PC)
 tgp_combined$group[tgp_combined$population==population_name] <- population_name
 tgp_combined$group[tgp_combined$population!=population_name] <- "TGP"
 tgp_combined$group <- as.factor(tgp_combined$group)
+tgp_combined$population <- as.factor(tgp_combined$population)
 
 subset_dataframe = subset(tgp_combined, population==population_name)
 
@@ -72,7 +76,7 @@ for (i in 1:total_pops){
   }
 }
 
-
+cols <- unlist(cols)
 # scatter PC1 vs PC2
 plot(tgp_combined$pc1, tgp_combined$pc2, col=cols[as.numeric(tgp_combined$population)],
      pch=c(17,20)[as.numeric(tgp_combined$group)], cex=0.5,xlab="Principal Component 1",ylab="Principal Component 2")
@@ -149,7 +153,7 @@ PCA_pops_center = subset(tgp_combined,population==center_population)
 #boxplot for PC1
 m11=mean(PCA_pops_center$pc1)
 s11=sd(PCA_pops_center$pc1)
-boxplot(pc1 ~ population, data = tgp_combined,ylab = "PC1", xlab=paste("PC1, +/- 6 SD on",population, sep=" "),cex=0.5,outline=F)
+boxplot(pc1 ~ population, data = tgp_combined,ylab = "PC1", xlab=paste("PC1, +/- 6 SD on",center_population, sep=" "),cex=0.5,outline=F)
 stripchart(pc1 ~ population, data = tgp_combined,vertical=T,method="jitter",add=T,pch=20,col=cols,cex=0.5)
 abline(h =m11, col = "black", lty=1, lwd=2,xpd=F)
 abline(h =m11-(6*s11), col = "black", lty=2, lwd=1,xpd=F)
@@ -158,7 +162,7 @@ abline(h =m11+(6*s11), col = "black", lty=2, lwd=1,xpd=F)
 #boxplot for PC2
 m12=mean(PCA_pops_center$pc2)
 s12=sd(PCA_pops_center$pc2)
-boxplot(pc2 ~ population, data = tgp_combined,ylab = "PC2", xlab=paste("PC2, +/- 6 SD on", population, sep=" "),cex=0.5,outline=F)
+boxplot(pc2 ~ population, data = tgp_combined,ylab = "PC2", xlab=paste("PC2, +/- 6 SD on", center_population, sep=" "),cex=0.5,outline=F)
 stripchart(pc2 ~ population, data = tgp_combined,vertical=T,method="jitter",add=T,pch=20,col=cols,cex=0.5)
 abline(h =m12, col = "black", lty=1, lwd=2,xpd=F)
 abline(h =m12-(6*s12), col = "black", lty=2, lwd=1,xpd=F)
@@ -167,7 +171,7 @@ abline(h =m12+(6*s12), col = "black", lty=2, lwd=1,xpd=F)
 #boxplot for PC3
 m13=mean(PCA_pops_center$pc3)
 s13=sd(PCA_pops_center$pc3)
-boxplot(pc3 ~ population, data = tgp_combined,ylab = "PC3", xlab=paste("PC3, +/- 6 SD on", population, sep=" "),cex=0.5,outline=F)
+boxplot(pc3 ~ population, data = tgp_combined,ylab = "PC3", xlab=paste("PC3, +/- 6 SD on", center_population, sep=" "),cex=0.5,outline=F)
 stripchart(pc3 ~ population, data = tgp_combined,vertical=T,method="jitter",add=T,pch=20,col=cols,cex=0.5)
 abline(h =m13, col = "black", lty=1, lwd=2,xpd=F)
 abline(h =m13-(6*s13), col = "black", lty=2, lwd=1,xpd=F)
@@ -176,7 +180,7 @@ abline(h =m13+(6*s13), col = "black", lty=2, lwd=1,xpd=F)
 #boxplot for PC4
 m14=mean(PCA_pops_center$pc4)
 s14=sd(PCA_pops_center$pc4)
-boxplot(pc4 ~ population, data = tgp_combined,ylab = "PC4", xlab=paste("PC4, +/- 6 SD on", population, sep=" "),cex=0.5,outline=F)
+boxplot(pc4 ~ population, data = tgp_combined,ylab = "PC4", xlab=paste("PC4, +/- 6 SD on", center_population, sep=" "),cex=0.5,outline=F)
 stripchart(pc4 ~ population, data = tgp_combined,vertical=T,method="jitter",add=T,pch=20,col=cols,cex=0.5)
 abline(h =m14, col = "black", lty=1, lwd=2,xpd=F)
 abline(h =m14-(6*s14), col = "black", lty=2, lwd=1,xpd=F)
@@ -185,7 +189,7 @@ abline(h =m14+(6*s14), col = "black", lty=2, lwd=1,xpd=F)
 #boxplot for PC5
 m15=mean(PCA_pops_center$pc5)
 s15=sd(PCA_pops_center$pc5)
-boxplot(pc5 ~ population, data = tgp_combined,ylab = "PC5", xlab=paste("PC5, +/- 6 SD on", population, sep=" "),cex=0.5,outline=F)
+boxplot(pc5 ~ population, data = tgp_combined,ylab = "PC5", xlab=paste("PC5, +/- 6 SD on", center_population, sep=" "),cex=0.5,outline=F)
 stripchart(pc5 ~ population, data = tgp_combined,vertical=T,method="jitter",add=T,pch=20,col=cols,cex=0.5)
 abline(h =m15, col = "black", lty=1, lwd=2,xpd=F)
 abline(h =m15-(6*s15), col = "black", lty=2, lwd=1,xpd=F)
