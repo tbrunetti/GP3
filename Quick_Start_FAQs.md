@@ -7,7 +7,7 @@ chunky run run_GWAS_analysis_pipeline.py -inputPLINK <myPlink.bed/.ped> -phenoFi
 This will run through all the default parameters of the pipeline from HWE through graphing PCAs (noTGP).  By running the above command the following flow will occur:  
   1.  Output directory is current working directory and the project name is set to date and time stamp **[--outDir, --projectName]**
   2.  Split out all ethnicies separately (the subsequent steps are recalculated for each individual ethnic group listed in the sample_sheet_template.xlsx)  
-<p align="center">**FOR EACH ETHNIC GROUP CALCULATE AND FILTER:**</p>  
+   <p align="center">**FOR EACH ETHNIC GROUP CALCULATE AND FILTER:**</p>  
   3.  remove snps below 97% call rate **[--snpMiss]**
   4.  remove snps with HWE less than 1e-6 **[--hweThresh]**
   5.  remove samples below 97% call rate **[--sampleMiss]**
@@ -29,7 +29,7 @@ chunky run run_GWAS_analysis_pipeline.py -inputPLINK <myPlink.bed/.ped> -phenoFi
 This will run through all the default parameters of the pipeline from HWE through graphing PCAs (only with TGP).  By running the above command the following flow will occur:  
   1.  Output directory is current working directory and the project name is set to data and time stamp **[--outDir, --projectName]**  
   2.  Split out all ethnicies separately (the subsequent steps are recalculated for each individual ethnic group listed in the sample_sheet_template.xlsx)
-<p align="center">**FOR EACH ETHNIC GROUP CALCULATE AND FILTER:**</p>  
+  <p align="center">**FOR EACH ETHNIC GROUP CALCULATE AND FILTER:**</p>  
   3.  remove snps below 97% call rate **[--snpMiss]**
   4.  remove snps with HWE less than 1e-6 **[--hweThresh]**
   5.  remove samples below 97% call rate **[--sampleMiss]**
