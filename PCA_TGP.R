@@ -7,9 +7,7 @@ library("GWASTools", lib.loc = args[3])
 TGP_pop_file = args[5] # full path including file name of sup_sub TGP population file
 center_population = args[6] # must be a population (case sensitive) in the TGP population file or the cohort using
 
-load("/home/brunettt/GENESIS_VIF2_MAF01/1000_genomes_GENESIS/CAAPA_MEGA_pass_QC_removed_failures_include_Peru_African_American_maf_greater_thresh_hetFiltered_dups_removed_thousGen_GENESIS")
-cohort="BASS"
-TGP_info <- read.table("Sub_and_SuperPopulation_info.txt", header=T)
+
 # loaded from genesis setup script in GWAS_analysis_pipeline.py
 load(paste(load_file)) 
 get_dataframe <- pData(scanAnnot)
