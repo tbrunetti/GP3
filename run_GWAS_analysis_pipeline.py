@@ -35,32 +35,39 @@ class Pipeline(BasePipeline):
 
 	def add_pipeline_args(self, parser):
 		# should other input options be available??
-		parser.add_argument('-inputPLINK', required=True, type=str, help='Full path to PLINK file ending in .BED or .PED')
+		parser.add_argument('-inputPLINK', required=True, type=str, help='Full path to PLINK file ending in .BED or .PED, no whitespaces in file name!')
 		parser.add_argument('-phenoFile', required=True, type=str, help='Full path to phenotype file, see argument readme for more details on format')
 		parser.add_argument('--sampleRemoval', default=None, help='Full path for samples to remove before analysis (i.e. those with sex discrepenences, poor QC, etc...) see readme for more details on format')
-		parser.add_argument('--outDir', default=os.getcwd(), type=str, help='[default=current working directory] Full path of existing directory to output results')
-		parser.add_argument('--projectName', default=str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")), type=str, help='[default=date time stamp] Name of project')
-		parser.add_argument('--startStep', default='hwe', type=str, help='The part of the pipeline you would like to start with')
-		parser.add_argument('--endStep', default=None, type=str, help='Point of the pipeline where you would like to stop analysis, if none specified, stops after start step is completed')
-		parser.add_argument('--hweThresh', default=1e-6, help='Filters out SNPs that are smaller than this threshold due to liklihood of genotyping error')
-		parser.add_argument('--LDmethod', default='indep', type=str, help='[default=indep, options:indep, indep-pairwise, indep-pairphase] Method to calculate linkage disequilibrium')
-		parser.add_argument('--VIF', default=2, type=int, help='[default=2] variant inflation factor for indep method LD pruning')
-		parser.add_argument('--rsq', default=0.50, type=float, help='[default=0.50] r squared threshold for indep-pairwise or indep-pairphase LD pruning method')
-		parser.add_argument('--windowSize', default=50, type=int, help='[default=50] the window size in kb for LD analysis')
-		parser.add_argument('--stepSize', default=5, type=int, help='[default=5] variant count to shift window after each interation')
-		parser.add_argument('--maf', default=0.05, type=float, help='[default=0.05], filter remaining LD pruned variants by MAF')
-		parser.add_argument('--hetMethod', default='minMax', type=str, help='[default=minMax], method to use to determine heterozygosity filtering options:  minMax, meanStd')
-		parser.add_argument('--het_std', default=3, type=float, help='[default=3] if using hetMethod=meanStd you can determine how many standard deviations aways from the mean is allowable for heterozygosity.  \
+		parser.add_argument('--outDir', default=os.getcwd(), type=str, help='[default=current working directory] Full path of existing directory to output results, no spaces/whitespaces!')
+		parser.add_argument('--projectName', default=str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")), type=str, help='[default=date/time stamp] Name of project, no spaces/whitespaces')
+		parser.add_argument('--startStep', default='hwe', type=str, help='[default=hwe, options: if --TGP not set -> [hwe, LD, maf, het, ibd, PCA_indi, or PCA_indi_graph] if --TGP is set ->\
+																		[hwe, LD, maf, het, ibd, PCA_TGP, or PCA_TGP_graph]] The part of the pipeline you would like to start with')
+		parser.add_argument('--endStep', default=None, type=str, help='[default=PCA_indi_graph (noTGP) or PCA_TGP_graph (if --TGP used), options: if --TGP not set -> [hwe, LD, maf, het, ibd, PCA_indi, or PCA_indi_graph] if --TGP is set -> \
+																		[hwe, LD, maf, het, ibd, PCA_TGP, or PCA_TGP_graph]] Point of the pipeline where you would like to \
+																		stop analysis')
+		parser.add_argument('--hweThresh', default=1e-6, help='[default=1e-6, options: any scientic notation value] Filters out SNPs that are smaller than this threshold due to liklihood of genotyping error')
+		parser.add_argument('--LDmethod', default='indep', type=str, help='[default=indep, options:indep, indep-pairwise or indep-pairphase] Method to calculate linkage disequilibrium')
+		parser.add_argument('--VIF', default=2, type=int, help='[default=2, options: any INT] variant inflation factor for indep method LD pruning')
+		parser.add_argument('--rsq', default=0.50, type=float, help='[default=0.50, options: any FLOAT between 0.0-1.0] r squared threshold for indep-pairwise or indep-pairphase LD pruning method')
+		parser.add_argument('--windowSize', default=50, type=int, help='[default=50, options: any INT] the window size in kb for LD analysis')
+		parser.add_argument('--stepSize', default=5, type=int, help='[default=5, options: any INT] variant count to shift window after each interation')
+		parser.add_argument('--maf', default=0.05, type=float, help='[default=0.05, option: any FLOAT between 0.0-1.0], filter remaining LD pruned variants by MAF, any MAF below set threshold is filtered out')
+		parser.add_argument('--hetMethod', default='minMax', type=str, help='[default=minMax, options:  minMax or meanStd], method to use to determine heterozygosity.  minMax filter based on \
+																			the parameters --hetThresh as the max F-inbreeding coefficient and --hetThreshMin for the minimum F-inbreeding coeffient, which \
+																			by default are 0.10 and -0.10, respectively.  The meanStd filter method calculates a het_score: \
+																			1-[observed[HOM]/total] and then filters out any samples that are more than 3 std deviations from the mean het_score. \
+																			The number of standard deviations from the mean can be changed using the --het_std parameter')
+		parser.add_argument('--het_std', default=3, type=float, help='[default=3, options: any FlOAT or INT] if using hetMethod=meanStd you can determine how many standard deviations aways from the mean is allowable for heterozygosity.  \
 																	Setting to 3 is interpreted as +/-3 standard deviations away from the mean of the het_score, calculated as 1-[observed(HOM)/total]')
-		parser.add_argument('--hetThresh', default=0.10, type=float, help='[default=0.10], filter out samples where inbreeding coefficient is greater than threshold (heterozygosity filtering)')
-		parser.add_argument('--hetThreshMin', default=-0.10, type=float, help='[default= -0.10] filter out samples where inbreeding coefficient is samller than min threshold set (heterozygosity filtering)')
+		parser.add_argument('--hetThresh', default=0.10, type=float, help='[default=0.10, options: any FlOAT], filter out samples where inbreeding coefficient is greater than threshold (heterozygosity filtering)')
+		parser.add_argument('--hetThreshMin', default=-0.10, type=float, help='[default= -0.10, options: any FlOAT] filter out samples where inbreeding coefficient is samller than min threshold set (heterozygosity filtering)')
 		parser.add_argument('--reanalyze', action='store_true', help='by adding this flag, it means you are going to pass a dataset through the pipeline that has already been partially/fully analyzed by this pipeline. WARNING! May over write exisiting data!!')
 		#parser.add_argument('--usePCs', default='pc1,pc2,pc3', type=str, help='[default: pc1,pc2,pc3], the user can pass any pc from 1-20 in a comma separated list to regress out in the GENanalysis step; must be used with --reanalyze flag; format should be the following: pc1,pc2,pc3,pc5')
-		parser.add_argument('--sampleMiss', default=0.03, type=float, help='[default: 0.03] Maximum missingness of genotype call in sample before it should be filtered out.  Float between 0-1, where 0 is no missing, and 1 is all missing (0.03 is interpreted as 3 percent of calls are missing)')
-		parser.add_argument('--snpMiss', default=0.03, type=float, help='[default: 0.03] Maximum missingness of genotype call in a SNP cluster before it should be filtered out.  Float between 0-1, where 0 is no missing, and 1 is all missing (0.03 is interpreted as 3 percent of calls are missing)')
+		parser.add_argument('--sampleMiss', default=0.03, type=float, help='[default: 0.03, options: any FLOAT between 0.0-1.0] Maximum missingness of genotype call in sample before it should be filtered out.  Float between 0-1, where 0 is no missing, and 1 is all missing (0.03 is interpreted as 3 percent of calls are missing)')
+		parser.add_argument('--snpMiss', default=0.03, type=float, help='[default: 0.03], options: any FLOAT between 0.0-1.0] Maximum missingness of genotype call in a SNP cluster before it should be filtered out.  Float between 0-1, where 0 is no missing, and 1 is all missing (0.03 is interpreted as 3 percent of calls are missing)')
 		parser.add_argument('--TGP', action='store_true', help='specifying this flag means to generate PCA plots with TGP data merged into the given cohort data set for the 5 superpopulations in TGP (AFR, AMR, EAS, EUR, SAS)')
-		parser.add_argument('--centerPop', default='myGroup', type=str, help="when using the TGP flag, you have the option to specify which population cohort that PCs should be centered around for boxplots.  By default this is set to your group(s).  You can pick a TGP super population listed in the TGP_Sub_and_SuperPopulation_info.txt file. CASE SENSITIVE!")
-	
+		parser.add_argument('--centerPop', default='myGroup', type=str, help="[default: myGroup, options: myGroup or available TGP group merged into input dataset] when using the TGP flag, you have the option to specify which population cohort that PCs should be centered around for boxplots.  By default this is set to your group(s).  You can pick a TGP super population listed in the TGP_Sub_and_SuperPopulation_info.txt file. CASE SENSITIVE!")
+
 	@staticmethod
 	def check_steps(order, start, stop):
 		if start == 'hwe' and stop == None:
