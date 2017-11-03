@@ -68,6 +68,7 @@ class Pipeline(BasePipeline):
 		parser.add_argument('--TGP', action='store_true', help='specifying this flag means to generate PCA plots with TGP data merged into the given cohort data set for the 5 superpopulations in TGP (AFR, AMR, EAS, EUR, SAS)')
 		parser.add_argument('--centerPop', default='myGroup', type=str, help="[default: myGroup, options: myGroup or available TGP group merged into input dataset] when using the TGP flag, you have the option to specify which population cohort that PCs should be centered around for boxplots.  By default this is set to your group(s).  You can pick a TGP super population listed in the TGP_Sub_and_SuperPopulation_info.txt file. CASE SENSITIVE!")
 
+	
 	@staticmethod
 	def check_steps(order, start, stop):
 		if start == 'hwe' and stop == None:
@@ -572,7 +573,7 @@ class Pipeline(BasePipeline):
 
 						all_samples_to_remove.flush()
 						all_samples_to_remove.close()
-						
+
 
 				print "running PCA step"
 				
