@@ -561,7 +561,7 @@ class Pipeline(BasePipeline):
 						pheno_Genesis[['IID', 'AFF']].to_csv(phenoFile_Genesis.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
 						phenoFile_Genesis.close()
 
-						original_fam_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories, names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str)
+						original_fam_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '.fam', names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str)
 						original_fam_file['tuple_name'] = list(zip(original_fam_file.FID, original_fam_file.IID))
 						pheno_Genesis['tuple_name'] = list(zip(pheno_Genesis.FID, pheno_Genesis.IID))
 
@@ -647,7 +647,7 @@ class Pipeline(BasePipeline):
 						#pheno_Genesis[['number_ID', 'AFF']].to_csv(phenoFile_Genesis.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
 						#phenoFile_Genesis.close()
 
-						original_fam_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories, names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str)
+						original_fam_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories +'.fam', names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str)
 						original_fam_file['tuple_name'] = list(zip(original_fam_file.FID, original_fam_file.IID))
 						pheno_Genesis['tuple_name'] = list(zip(pheno_Genesis.FID, pheno_Genesis.IID))
 
