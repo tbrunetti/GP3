@@ -546,6 +546,7 @@ class Pipeline(BasePipeline):
 				phenoFiles = {}
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
+						all_samples_to_remove = open(outdir + '/' + directories + '/' + directories + '_all_samples_to_remove_from_original_TGP.txt', 'w')
 						phenoFile_Genesis = open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_thousGen_phenoGENESIS.txt', 'w')
 						phenoFiles[directories] = phenoFile_Genesis.name
 						# run KING and output file as -b prefix name ending in .kin, .kin0 for each group
@@ -559,6 +560,19 @@ class Pipeline(BasePipeline):
 						pheno_Genesis[['IID', 'AFF']].to_csv(phenoFile_Genesis.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
 						phenoFile_Genesis.close()
 
+						original_fam_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories, names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str)
+						original_fam_file['tuple_name'] = list(zip(original_fam_file.FID, original_fam_file.IID))
+						pheno_Genesis['tuple_name'] = list(zip(pheno_Genesis.FID, pheno_Genesis.IID))
+
+						pre_filter = set(list(original_fam_file['tuple_name']))
+						post_filter = set(list(pheno_Genesis['tuple_name']))
+						remove_samples_list = list(pre_filter.difference(post_filter))
+						for fails in remove_samples_list:
+							all_samples_to_remove.write(str(fails[0]) + '\t' + str(fails[1]) + '\n')
+
+						all_samples_to_remove.flush()
+						all_samples_to_remove.close()
+						
 
 				print "running PCA step"
 				
@@ -603,12 +617,14 @@ class Pipeline(BasePipeline):
 				phenoFiles = {}
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
+						all_samples_to_remove = open(outdir + '/' + directories + '/' + directories + '_all_samples_to_remove_from_original.txt', 'w')
+
 						fam_key = open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_phenoGENESIS_number_ids_included.txt', 'w')
 						phenoFile_Genesis = open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_phenoGENESIS.txt', 'w')
 						phenoFiles[directories] = phenoFile_Genesis.name
 						# generate phenotype table for input into GENESIS setup analysis pipeline WITHOUT 1000 genomes
                                                 pheno_Genesis = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed.fam', delim_whitespace=True, names = ['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str)
-						print pheno_Genesis
+
 						pheno_Genesis.insert(6, 'numberID', range(1, len(pheno_Genesis)+1))
 						pheno_Genesis.loc[(pheno_Genesis['AFF']!='1') & (pheno_Genesis['AFF']!='2'), 'AFF']='NA'
 						pheno_Genesis[['numberID', 'AFF']].to_csv(phenoFile_Genesis.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
@@ -629,6 +645,19 @@ class Pipeline(BasePipeline):
 						#pheno_Genesis.loc[(pheno_Genesis['AFF']!='1') & (pheno_Genesis['AFF']!='2'), 'AFF']='NA'
 						#pheno_Genesis[['number_ID', 'AFF']].to_csv(phenoFile_Genesis.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
 						#phenoFile_Genesis.close()
+
+						original_fam_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories, names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str)
+						original_fam_file['tuple_name'] = list(zip(original_fam_file.FID, original_fam_file.IID))
+						pheno_Genesis['tuple_name'] = list(zip(pheno_Genesis.FID, pheno_Genesis.IID))
+
+						pre_filter = set(list(original_fam_file['tuple_name']))
+						post_filter = set(list(pheno_Genesis['tuple_name']))
+						remove_samples_list = list(pre_filter.difference(post_filter))
+						for fails in remove_samples_list:
+							all_samples_to_remove.write(str(fails[0]) + '\t' + str(fails[1]) + '\n')
+
+						all_samples_to_remove.flush()
+						all_samples_to_remove.close()
 
 				print "running PCA step"
 				
