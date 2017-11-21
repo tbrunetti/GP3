@@ -7,7 +7,6 @@ outDir_path <- args[4]
 library("GENESIS", lib.loc = args[3])
 library("GWASTools", lib.loc = args[3])
 
-
 # loaded from genesis setup script in GWAS_analysis_pipeline.py
 load(paste(load_file))
 get_dataframe <- pData(scanAnnot)

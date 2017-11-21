@@ -647,7 +647,7 @@ class Pipeline(BasePipeline):
 						#pheno_Genesis[['number_ID', 'AFF']].to_csv(phenoFile_Genesis.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
 						#phenoFile_Genesis.close()
 
-						original_fam_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories +'.fam', names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str, delim_whitespace=True)
+						original_fam_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '.fam', names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str, delim_whitespace=True)
 						original_fam_file['tuple_name'] = list(zip(original_fam_file.FID, original_fam_file.IID))
 						pheno_Genesis['tuple_name'] = list(zip(pheno_Genesis.FID, pheno_Genesis.IID))
 
@@ -656,7 +656,8 @@ class Pipeline(BasePipeline):
 						remove_samples_list = list(pre_filter.difference(post_filter))
 						for fails in remove_samples_list:
 							all_samples_to_remove.write(str(fails[0]) + '\t' + str(fails[1]) + '\n')
-
+						print pre_filter
+						print post_filter
 						all_samples_to_remove.flush()
 						all_samples_to_remove.close()
 
