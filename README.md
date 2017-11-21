@@ -1,5 +1,5 @@
 # GP3
-GWAS Pre-Processing Pipeline
+**G**WAS **P**re-**P**rocessing **P**ipeline
 
 ## Overview and Purpose
 ------------------------
