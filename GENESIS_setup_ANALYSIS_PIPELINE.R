@@ -5,7 +5,8 @@
 args <- commandArgs(trailingOnly = T)
 filePrefix <- args[1] # for KING and PLINK files
 phenoFile <- args[2] # specially designed for GENESIS (essentially the 2nd and 6th column of fam file; need full name and path)
-
+pcmat_num <- as.integer(args[4]) # used to calculate pcrelate
+print(pcmat_num)
 library(GWASTools, lib.loc=args[3])
 
 ###Read in Barbados genotype data for PCAs
@@ -25,8 +26,8 @@ iids <- getScanID(genoData)
 ###Run PC analysis
 Kingmat <- king2mat(file.kin0=file.kin0,file.kin=NULL,type="kinship",iids = iids)
 mypcair <- pcair(genoData = genoData, kinMat = Kingmat,divMat = Kingmat, v=200)
-mypcrel <- pcrelate(genoData = genoData, pcMat = mypcair$vectors[,1:5],training.set = mypcair$unrels)
- #pcMat is not the number of PCs you have but instead the number of different admixture populations
+mypcrel <- pcrelate(genoData = genoData, pcMat = mypcair$vectors[,1:pcmat_num],training.set = mypcair$unrels)
+#pcMat is not the number of PCs you have but instead the number of different admixture populations
 
 pheno <- as.vector(as.matrix(read.table(phenoFile,header=F,na.string="NA")['V2']))
 pheno <- pheno - 1
