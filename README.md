@@ -45,6 +45,12 @@ There are two files that are minimally required in order to run the pipeline:
 * Populated sample_sheet_template.xlsx  
 
 
+
+__ALREADY INSTALLED CHUNKYPIPES AND PIPELINE?__  Click [here](https://github.com/tbrunetti/GP3/blob/master/Quick_Start_FAQs.md) for quick start.
+
+
+
+
 ## Installing and Running Pipeline on HPC or without sudo privileges
 ---------------------------------------------------------------------
 1. Install, Create, Activate Virutal Environment
