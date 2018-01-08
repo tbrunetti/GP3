@@ -5,6 +5,7 @@ import math
 import datetime
 import sys
 import os
+import shutil
 import time
 
 class Pipeline(BasePipeline):
@@ -62,12 +63,17 @@ class Pipeline(BasePipeline):
 		parser.add_argument('--hetThresh', default=0.10, type=float, help='[default=0.10, options: any FlOAT], filter out samples where inbreeding coefficient is greater than threshold (heterozygosity filtering)')
 		parser.add_argument('--hetThreshMin', default=-0.10, type=float, help='[default= -0.10, options: any FlOAT] filter out samples where inbreeding coefficient is samller than min threshold set (heterozygosity filtering)')
 		parser.add_argument('--reanalyze', action='store_true', help='by adding this flag, it means you are going to pass a dataset through the pipeline that has already been partially/fully analyzed by this pipeline. WARNING! May over write exisiting data!!')
-		#parser.add_argument('--usePCs', default='pc1,pc2,pc3', type=str, help='[default: pc1,pc2,pc3], the user can pass any pc from 1-20 in a comma separated list to regress out in the GENanalysis step; must be used with --reanalyze flag; format should be the following: pc1,pc2,pc3,pc5')
 		parser.add_argument('--sampleMiss', default=0.03, type=float, help='[default: 0.03, options: any FLOAT between 0.0-1.0] Maximum missingness of genotype call in sample before it should be filtered out.  Float between 0-1, where 0 is no missing, and 1 is all missing (0.03 is interpreted as 3 percent of calls are missing)')
 		parser.add_argument('--snpMiss', default=0.03, type=float, help='[default: 0.03], options: any FLOAT between 0.0-1.0] Maximum missingness of genotype call in a SNP cluster before it should be filtered out.  Float between 0-1, where 0 is no missing, and 1 is all missing (0.03 is interpreted as 3 percent of calls are missing)')
 		parser.add_argument('--TGP', action='store_true', help='specifying this flag means to generate PCA plots with TGP data merged into the given cohort data set for the 5 superpopulations in TGP (AFR, AMR, EAS, EUR, SAS)')
 		parser.add_argument('--centerPop', default='myGroup', type=str, help="[default: myGroup, options: myGroup or available TGP group merged into input dataset] when using the TGP flag, you have the option to specify which population cohort that PCs should be centered around for boxplots.  By default this is set to your group(s).  You can pick a TGP super population listed in the TGP_Sub_and_SuperPopulation_info.txt file. CASE SENSITIVE!")
 
+		# TESTING THIS #
+		parser.add_argument('--outliers', default=None, type=str, help="A txt file of FID and IID, tab-delimited and one sample per line, that are outliers that should be removed from the sample set (PCA outlier removal); Use original names (original FID and IID), not renamed 1-n for GENESIS formatting")
+		
+		# TESTING THIS #
+		parser.add_argument('--pcmat', default=5, type=int, help='[default=5, INT] Number of predicted admizture populations in dataset to be used in GENESIS calculation for PCA')
+	
 	
 	@staticmethod
 	def check_steps(order, start, stop):
@@ -173,18 +179,19 @@ class Pipeline(BasePipeline):
 			#self.settings.logger.set(
 			#	destination=pipeline_args['outDir'] + '/' + pipeline_args['projectName'] +'/stdout.log',
 			#	destination_stderr=pipeline_args['outDir'] + '/' + pipeline_args['projectName'] + '/stderr.log')
-
+ 
 		
 		# determine what steps need to be performed
+		# NOTE: outlier_removal is an optional step where if the --outlier argument is not specified, the step is skipped
 		if pipeline_args['TGP'] == True:
 			step_order = self.check_steps(
-				order = ['hwe', 'LD', 'maf', 'het', 'ibd', 'PCA_TGP', 'PCA_TGP_graph'], 
+				order = ['hwe', 'LD', 'maf', 'het', 'ibd', 'outlier_removal', 'PCA_TGP', 'PCA_TGP_graph'], 
 				start = pipeline_args['startStep'],
 				stop = pipeline_args['endStep']
 				)
 		else:
 			step_order = self.check_steps(
-				order = ['hwe', 'LD', 'maf', 'het', 'ibd', 'PCA_indi', 'PCA_indi_graph'], 
+				order = ['hwe', 'LD', 'maf', 'het', 'ibd', 'outlier_removal', 'PCA_indi', 'PCA_indi_graph'], 
 				start = pipeline_args['startStep'],
 				stop = pipeline_args['endStep']
 				)			
@@ -497,8 +504,50 @@ class Pipeline(BasePipeline):
 
 				step_order.pop(0)
 	
+			# remove outliers based input file list
+			# if no list is provided (i.e outlier option is not specified) then just creates copy of file renamed
+			# user will notice that the file outliers_removed_directory.txt is empty if no list is provided since no outliers present
+			elif step_order[0] == 'outlier_removal':
+				if pipeline_args['outliers'] == None:
+					for directories in os.listdir(outdir):
+						if (os.path.isdir(os.path.join(outdir, directories))):
+							print "Skipping outlier removal step"
+							outlier_list = open(outdir + '/' + directories + '/' + 'outliers_removed_' + directories + '.txt', 'w')
+							# copy file with new name, suffix outliers_removed
+							shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed.bed',
+											outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.bed')
+							shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed.bim',
+											outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.bim')
+							shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed.fam',
+											outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.fam')
+							outlier_list.close()
+							
+					step_order.pop(0)
+				else:
+					for directories in os.listdir(outdir):
+						if (os.path.isdir(os.path.join(outdir, directories))):
+							print "removing outliers post IBD step as specified by user input"
+							outlier_list = open(outdir + '/' + directories + '/' + 'outliers_removed_' + directories + '.txt', 'w')
+							input_list = pd.read_table(pipeline_args['outliers'], names = ['FID', 'IID'], dtype=str)
+							fam_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed.fam', 
+										names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str, delim_whitespace=True)
 
-			
+							ids_found = set(list(input_list[['FID', 'IID']].itertuples(index=False, name=None))).intersection(set(list(fam_file[['FID', 'IID']].itertuples(index=False, name=None))))
+
+							for samples in ids_found:
+								outlier_list.write(samples[0] + '\t' + samples[1] + '\n')
+
+							outlier_list.flush()
+							outlier_list.close()
+
+							general_plink.run(
+								Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed'),
+								Parameter('--remove', outlier_list.name),
+								Parameter('--make-bed'),
+								Parameter('--out', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed')
+								)
+
+					step_order.pop(0)
 
 			# PCA with 1000 genomes
 			elif step_order[0] =='PCA_TGP':
@@ -508,7 +557,7 @@ class Pipeline(BasePipeline):
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 						keep_these_snps_in_1000 = open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_all_passing_snps_from_project.txt', 'w')
-						bim_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed.bim', names=['chr', 'SNP_name', 'pos1', 'pos2', 'allele1', 'allele2'])
+						bim_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.bim', names=['chr', 'SNP_name', 'pos1', 'pos2', 'allele1', 'allele2'])
 						bim_file_1000 = pd.read_table(pipeline_config['thousand_genomes']['path'][:-4]+'.bim',  names=['chr', 'SNP_name', 'pos1', 'pos2', 'allele1', 'allele2'])
 						extract_for_PCA = list(set(list(bim_file_1000['SNP_name'])) & set(list(bim_file['SNP_name'])))
 
@@ -526,7 +575,7 @@ class Pipeline(BasePipeline):
 						
 
 						general_plink.run(
-            				Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed'),
+            				Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed'),
                     		Parameter('--extract', keep_these_snps_in_1000.name),
                 			Parameter('--make-bed'),
                 			Parameter('--out', outdir + '/' + directories + '/extracted_from_passing_' + directories +'_SNPs_for_use_with_1000_merge')
@@ -538,7 +587,7 @@ class Pipeline(BasePipeline):
 							Parameter('--bmerge',no_suffix + '_extracted_from_passing_' + directories +'_SNPs.bed', no_suffix + '_extracted_from_passing_' + directories +'_SNPs.bim', no_suffix + '_extracted_from_passing_' + directories +'_SNPs.fam'),
 							Parameter('--allow-no-sex'),
 							Parameter('--make-bed'),
-							Parameter('--out',  outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +'_maf_greater_thresh_hetFiltered_dups_removed_thousGen')
+							Parameter('--out',  outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +'_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen')
 							)
 				
 
@@ -548,16 +597,16 @@ class Pipeline(BasePipeline):
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 						all_samples_to_remove = open(outdir + '/' + directories + '/' + directories + '_all_samples_to_remove_from_original_TGP.txt', 'w')
-						phenoFile_Genesis = open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_thousGen_phenoGENESIS.txt', 'w')
+						phenoFile_Genesis = open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen_phenoGENESIS.txt', 'w')
 						phenoFiles[directories] = phenoFile_Genesis.name
 						# run KING and output file as -b prefix name ending in .kin, .kin0 for each group
 						general_king.run(
-							Parameter('-b', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_thousGen.bed'),
-							Parameter('--prefix', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_thousGen')
+							Parameter('-b', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen.bed'),
+							Parameter('--prefix', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen')
 							)
 						
 						# generate phenotype table for input into GENESIS setup analysis pipeline WITHOUT 1000 genomes
-						pheno_Genesis = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_thousGen.fam', delim_whitespace=True, names = ['FID,', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'])
+						pheno_Genesis = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen.fam', delim_whitespace=True, names = ['FID,', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'])
 						pheno_Genesis[['IID', 'AFF']].to_csv(phenoFile_Genesis.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
 						phenoFile_Genesis.close()
 
@@ -581,7 +630,7 @@ class Pipeline(BasePipeline):
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 						#Popen should launch jobs in parallel
-						processes.append(subprocess.Popen(['Rscript', 'GENESIS_setup_ANALYSIS_PIPELINE.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_thousGen', phenoFiles[directories], pipeline_config['R_libraries']['path']]))
+						processes.append(subprocess.Popen(['Rscript', 'GENESIS_setup_ANALYSIS_PIPELINE.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen', phenoFiles[directories], pipeline_config['R_libraries']['path'], str(pipeline_args['pcmat'])]))
 
 				for job in processes:
 					job.wait() # wait for all parallel jobs to finish before proceeding to next step
@@ -600,7 +649,7 @@ class Pipeline(BasePipeline):
 						else:
 							center_pop = pipeline_args['centerPop']
 						#Popen should launch jobs in parallel for producing PDFs of graphs for each cohort
-						graphing_processes.append(subprocess.Popen(['Rscript', 'PCA_TGP.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_thousGen_GENESIS', str(directories), pipeline_config['R_libraries']['path'], outdir + '/' + directories + '/',
+						graphing_processes.append(subprocess.Popen(['Rscript', 'PCA_TGP.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen_GENESIS', str(directories), pipeline_config['R_libraries']['path'], outdir + '/' + directories + '/',
 																		pipeline_config['TGP_populations']['path'], center_pop]))
 
 				for pdfs in graphing_processes:
@@ -613,30 +662,30 @@ class Pipeline(BasePipeline):
 			# prepares GENESIS R object output for direct input into GENESIS association pipeline and renames sample IDs to be compatible with GENESIS association pipeline
 			# performs the KING, GENESIS setup and PC calculation, and generates PCA graphs and screen plots for each cohort
 			elif step_order[0] =='PCA_indi':
-				
+
 				print "running KING step"
 				phenoFiles = {}
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 						all_samples_to_remove = open(outdir + '/' + directories + '/' + directories + '_all_samples_to_remove_from_original.txt', 'w')
 
-						fam_key = open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_phenoGENESIS_number_ids_included.txt', 'w')
-						phenoFile_Genesis = open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_phenoGENESIS.txt', 'w')
+						fam_key = open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_phenoGENESIS_number_ids_included.txt', 'w')
+						phenoFile_Genesis = open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_phenoGENESIS.txt', 'w')
 						phenoFiles[directories] = phenoFile_Genesis.name
 						# generate phenotype table for input into GENESIS setup analysis pipeline WITHOUT 1000 genomes
-                                                pheno_Genesis = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed.fam', delim_whitespace=True, names = ['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str)
+                                                pheno_Genesis = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.fam', delim_whitespace=True, names = ['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str)
 
 						pheno_Genesis.insert(6, 'numberID', range(1, len(pheno_Genesis)+1))
 						pheno_Genesis.loc[(pheno_Genesis['AFF']!='1') & (pheno_Genesis['AFF']!='2'), 'AFF']='NA'
 						pheno_Genesis[['numberID', 'AFF']].to_csv(phenoFile_Genesis.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
 						phenoFile_Genesis.close()
-						pheno_Genesis[['FID', 'numberID', 'PAT', 'MAT', 'SEX', 'AFF']].to_csv(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed.fam', sep='\t', index=False, header=False)
+						pheno_Genesis[['FID', 'numberID', 'PAT', 'MAT', 'SEX', 'AFF']].to_csv(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.fam', sep='\t', index=False, header=False)
 
 						pheno_Genesis[['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF', 'numberID']].to_csv(fam_key.name, sep='\t', index=False)
 						# run KING and output file as -b prefix name ending in .kin, .kin0 for each group
 						general_king.run(
-							Parameter('-b', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed.bed'),
-							Parameter('--prefix', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed')
+							Parameter('-b', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.bed'),
+							Parameter('--prefix', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed')
 							)
 
 						
@@ -667,7 +716,7 @@ class Pipeline(BasePipeline):
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 						#Popen should launch jobs in parallel
-						processes.append(subprocess.Popen(['Rscript', 'GENESIS_setup_ANALYSIS_PIPELINE.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed', phenoFiles[directories], pipeline_config['R_libraries']['path']]))
+						processes.append(subprocess.Popen(['Rscript', 'GENESIS_setup_ANALYSIS_PIPELINE.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed', phenoFiles[directories], pipeline_config['R_libraries']['path'], str(pipeline_args['pcmat'])]))
 
 				for job in processes:
 					job.wait() # wait for all parallel jobs to finish before proceeding to next step
@@ -682,7 +731,7 @@ class Pipeline(BasePipeline):
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 						#Popen should launch jobs in parallel for producing PDFs of graphs for each cohort
-						graphing_processes.append(subprocess.Popen(['Rscript', 'PCA_indi.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_GENESIS', str(directories), pipeline_config['R_libraries']['path'], outdir + '/' + directories + '/']))
+						graphing_processes.append(subprocess.Popen(['Rscript', 'PCA_indi.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_GENESIS', str(directories), pipeline_config['R_libraries']['path'], outdir + '/' + directories + '/']))
 
 				for pdfs in graphing_processes:
 					pdfs.wait() # wait for all parallel jobs to finish
@@ -696,11 +745,6 @@ class Pipeline(BasePipeline):
 		# output PDFs -- need to make this compatible with --reanalyze
 		# put these under each of the steps
 		paramsThresh.output(outdir + '/' + pipeline_args['projectName'] + '_parameters_and_thresholds.pdf', 'F') # output results to PDF
-
-				
-			
-
-
 
 '''
 
