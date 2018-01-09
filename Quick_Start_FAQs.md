@@ -12,13 +12,14 @@ This will run through all the default parameters of the pipeline from HWE throug
 3.  remove snps below 97% call rate **[--snpMiss]**  
 4.  remove snps with HWE less than 1e-6 **[--hweThresh]**  
 5.  remove samples below 97% call rate **[--sampleMiss]**  
-6.  LD prune snps using method *indep* with rsq of 0.50 and window size of 50, step size of 5 **[--LDmethod, --VIF, --rsq, --windowSize, --stepSize]**  
+6.  LD prune snps using method *indep* with VIF of 2 and window size of 50, step size of 5 **[--LDmethod, --VIF, --rsq, --windowSize, --stepSize]**  
 7.  remove snps with MAF <= 0.05 **[--maf]**  
-8.  remove samples with method *minMax* with  excess heterozygosity of F-inbreeding coefficient > 0.10 or F-inbreeing coefficient < -0.10 **[--hetMethod, --hetTresh, --hetThreshMin, --het\_std]**  
-9.  perform IBD and remove true duplicate samples  
-10. PCA **without** TGP for each group using GENESIS (includes running KING)
-11. graph each group with PCA screen plots and boxplots  
-12. generate a list of samples to remove  
+8.  remove samples with method *meanStd* with  excess heterozygosity of more than 3 standard deviations from the mean for each population **[--hetMethod, --hetTresh, --hetThreshMin, --het\_std]**  
+9.  perform IBD and remove true duplicate samples 
+10. Remove outliers specified by user (if available) **[--outliers]** 
+11. PCA **without** TGP for each group using GENESIS (includes running KING) and using admixture population number estimation of 5 **[--pcmat]**
+12. graph each group with PCA screen plots and boxplots with mean and standard deviations centered around each input cohort **[--centerPop]** 
+13. generate a list of samples to remove  
 
 
 ## Running Pipeline with TGP with Defaults
@@ -35,14 +36,15 @@ This will run through all the default parameters of the pipeline from HWE throug
 3.  remove snps below 97% call rate **[--snpMiss]**  
 4.  remove snps with HWE less than 1e-6 **[--hweThresh]**  
 5.  remove samples below 97% call rate **[--sampleMiss]**  
-6.  LD prune snps using method *indep* with rsq of 0.50 and window size of 50, step size of 5 **[--LDmethod, --VIF, --rsq, --windowSize, --stepSize]**  
+6.  LD prune snps using method *indep* with VIF of 2 and window size of 50, step size of 5 **[--LDmethod, --VIF, --rsq, --windowSize, --stepSize]**  
 7.  remove snps with MAF <= 0.05 **[--maf]**  
-8.  remove samples with method *minMax* with excess heterozygosity of F-inbreeding coefficient > 0.10 or F-inbreeding coefficient < -0.10 **[--hetMethod, --hetThresh, --hetThreshMin, --het\_std]**  
+8.  remove samples with method *meanStd* with  excess heterozygosity of more than 3 standard deviations from the mean for each population **[--hetMethod, --hetTresh, --hetThreshMin, --het\_std]**  
 9.  perform IBD and remove true duplicate samples  
-10. Merge TGP samples with input samples and only take common snps between groups **[--TGP]**  
-11. PCA **including** TGP for each group using GENESIS (includes running KING)  
-12. graph each group with PCA screen plots and boxplots with mean and standard deviations centered around each input cohort **[--centerPop]**   
-13. generate a list of samples to remove
+10. Remove outliers specified by user (if available) **[--outliers]**
+11. Merge TGP samples with input samples and only take common snps between groups **[--TGP]**  
+12. PCA **including** TGP for each group using GENESIS (includes running KING) and using admixture population number estimation of 5 **[--pcmat]**  
+13. graph each group with PCA screen plots and boxplots with mean and standard deviations centered around each input cohort **[--centerPop]**   
+14. generate a list of samples to remove
 
 
 ## Pipeline Help Flag
