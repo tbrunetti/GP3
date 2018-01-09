@@ -66,11 +66,7 @@ class Pipeline(BasePipeline):
 		parser.add_argument('--snpMiss', default=0.03, type=float, help='[default: 0.03], options: any FLOAT between 0.0-1.0] Maximum missingness of genotype call in a SNP cluster before it should be filtered out.  Float between 0-1, where 0 is no missing, and 1 is all missing (0.03 is interpreted as 3 percent of calls are missing)')
 		parser.add_argument('--TGP', action='store_true', help='specifying this flag means to generate PCA plots with TGP data merged into the given cohort data set for the 5 superpopulations in TGP (AFR, AMR, EAS, EUR, SAS)')
 		parser.add_argument('--centerPop', default='myGroup', type=str, help="[default: myGroup, options: myGroup or available TGP group merged into input dataset] when using the TGP flag, you have the option to specify which population cohort that PCs should be centered around for boxplots.  By default this is set to your group(s).  You can pick a TGP super population listed in the TGP_Sub_and_SuperPopulation_info.txt file. CASE SENSITIVE!")
-
-		# TESTING THIS #
 		parser.add_argument('--outliers', default=None, type=str, help="A txt file of FID and IID, tab-delimited and one sample per line, that are outliers that should be removed from the sample set (PCA outlier removal); Use original names (original FID and IID), not renamed 1-n for GENESIS formatting")
-		
-		# TESTING THIS #
 		parser.add_argument('--pcmat', default=5, type=int, help='[default=5, INT] Number of predicted admizture populations in dataset to be used in GENESIS calculation for PCA')
 	
 	
@@ -633,6 +629,20 @@ class Pipeline(BasePipeline):
 				for job in processes:
 					job.wait() # wait for all parallel jobs to finish before proceeding to next step
 
+
+				# copies final output *_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed* in another file renamed to ease of searching final file name
+				for directories in os.listdir(outdir):
+					if (os.path.isdir(os.path.join(outdir, directories))):
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen.bed', outdir + '/' + directories + '/' + directories + '_all_steps_completed_TGP_final.bed')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen.bim', outdir + '/' + directories + '/' + directories + '_all_steps_completed_TGP_final.bim')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen.fam', outdir + '/' + directories + '/' + directories + '_all_steps_completed_TGP_final.fam')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen.kin', outdir + '/' + directories + '/' + directories + '_all_steps_completed_TGP_final.kin')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen.kin0', outdir + '/' + directories + '/' + directories + '_all_steps_completed_TGP_final.kin0')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen.gds', outdir + '/' + directories + '/' + directories + '_all_steps_completed_TGP_final.gds')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen_GENESIS', outdir + '/' + directories + '/' + directories + '_all_steps_completed_TGP_final_GENESIS.Rdata')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen_phenoGENESIS.txt', outdir + '/' + directories + '/' + directories + '_all_steps_completed_TGP_final_phenoGENESIS.txt')
+				
+
 				step_order.pop(0)
 
 			elif step_order[0] == "PCA_TGP_graph":
@@ -686,13 +696,6 @@ class Pipeline(BasePipeline):
 							Parameter('--prefix', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed')
 							)
 
-						
-						# generate phenotype table for input into GENESIS setup analysis pipeline WITHOUT 1000 genomes
-						#pheno_Genesis = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed.fam', delim_whitespace=True, names = ['FID,', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str)
-						#pheno_Genesis.insert(0, 'numberID', range(1, len(pheno_Genesis)+1))
-						#pheno_Genesis.loc[(pheno_Genesis['AFF']!='1') & (pheno_Genesis['AFF']!='2'), 'AFF']='NA'
-						#pheno_Genesis[['number_ID', 'AFF']].to_csv(phenoFile_Genesis.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
-						#phenoFile_Genesis.close()
 
 						original_fam_file = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '.fam', names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'], dtype=str, delim_whitespace=True)
 						original_fam_file['tuple_name'] = list(zip(original_fam_file.FID, original_fam_file.IID))
@@ -719,6 +722,20 @@ class Pipeline(BasePipeline):
 				for job in processes:
 					job.wait() # wait for all parallel jobs to finish before proceeding to next step
 
+				
+				# copies final output *_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed* in another file renamed to ease of searching final file name
+				for directories in os.listdir(outdir):
+					if (os.path.isdir(os.path.join(outdir, directories))):
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.bed', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.bed')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.bim', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.bim')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.fam', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.fam')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.kin', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.kin')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.kin0', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.kin0')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.gds', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.gds')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_GENESIS', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final_GENESIS.Rdata')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_phenoGENESIS_number_ids_included.txt', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final_GENESIS_sample_key_file.txt')
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_phenoGENESIS.txt', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final_phenoGENESIS.txt')
+				
 				step_order.pop(0)
 		
 			elif step_order[0] == "PCA_indi_graph":
@@ -744,82 +761,3 @@ class Pipeline(BasePipeline):
 		# put these under each of the steps
 		paramsThresh.output(outdir + '/' + pipeline_args['projectName'] + '_parameters_and_thresholds.pdf', 'F') # output results to PDF
 
-'''
-
-
-			# ------------------------------------everything below this line can *probably* be removed (wait to remove until new pipeline is created)-----------------------------------------
-
-
-			# this is the step at which analysis will be restarted so as to add PCs from
-			# previous step
-			elif step_order[0] == 'GENanalysis':
-				check_processes = []
-				# stores name of all chunked files
-				total_files = []
-				# stores name of all chunked file by group
-				group_files = {}
-				for directories in os.listdir(outdir):
-					if (os.path.isdir(os.path.join(outdir, directories))):
-						group_files[directories] = []						
-						# calculates the number of chunked files that will be produced and what the names of those files will be
-
-						num_snps = sum(1 for line in open(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_hweFiltered_failed_samples_removed_input_into_GENESIS.bim'))
-						num_files = int(math.ceil((float(num_snps)/float(100000))))
-
-						for split_range in range(0, num_files):
-							if split_range < 10: # required because linux split uses 00, 01, 02, 03, format therefore when using python iterator a 0 must be appended to front
-								total_files.append(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_hweFiltered_failed_samples_removed_input_into_GENESIS_split0'+str(split_range)+'.results.txt')
-								group_files[directories].append(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_hweFiltered_failed_samples_removed_input_into_GENESIS_split0'+str(split_range)+'.results.txt')
-							else:
-								total_files.append(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_hweFiltered_failed_samples_removed_input_into_GENESIS_split'+str(split_range)+'.results.txt')
-								group_files[directories].append(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_hweFiltered_failed_samples_removed_input_into_GENESIS_split'+str(split_range)+'.results.txt')
-
-						# run a shell script which will submit slurm script
-						print "submitting slurm script"
-						check_processes.append(subprocess.Popen(['./export_var_slurm_streamlined_by_group_only.sh',outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_hweFiltered_failed_samples_removed_input_into_GENESIS',pipeline_config['R_libraries']['path'], pipeline_args['usePCs']]))
-						# concatenate all results together with only one line of header
-						
-							
-						#sys.exit("Problem submitting slurm script, system exiting...")
-
-
-				## FILE CHECK HERE -- DO NOT PROCEED UNTIL ALL FILES CREATED from the final results of the GENESIS!! looking for .results.txt
-
-				while True:
-					if all(os.path.isfile(chunk_file) for chunk_file in total_files):
-						break;
-					else:
-						print "waiting for split files..."
-						time.sleep(60) # wait 1 minute before checking if files are done
-
-				
-
-				for directories in os.listdir(outdir):
-					if (os.path.isdir(os.path.join(outdir, directories))):
-						try: # delete this file if it already exists so as not to append pre-existing data
-							os.remove(outdir +'/'+ directories + '_final_results_merged.txt')
-						except OSError:
-							pass
-						final_results_merged = open(outdir +'/'+ directories + '_final_results_merged.txt', 'w')
-						subprocess.call(['head', '-n', '1', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_hweFiltered_failed_samples_removed_input_into_GENESIS_split00.results.txt'], stdout=final_results_merged)
-						final_results_merged.flush()
-						for filename in group_files[directories]:
-							subprocess.call(['tail', '-n', '+2', '-q', filename], stdout=final_results_merged)
-							final_results_merged.flush()
-						
-						cases_controls = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_hweFiltered_failed_samples_removed_input_into_GENESIS.fam', delim_whitespace=True, names=['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'])	
-						total_cases_controls = collections.Counter(list(cases_controls['AFF']))
-						try:
-							controls = str(total_cases_controls[1])
-							cases = str(total_cases_controls[2])
-						except KeyError:
-							controls = 'NA'
-							cases = 'NA'
-
-						# creates Manhattan and qqplots of data
-						subprocess.call(['Rscript', 'genesis_clean_qqman_ANALYSIS_PIPELINE.R', final_results_merged.name, outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_hweFiltered_failed_samples_removed_input_into_GENESIS.bim', pipeline_config['R_libraries']['path'], pipeline_args['projectName']+'_'+directories, outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories, cases, controls])
-				
-				step_order.pop(0)
-		
-
-'''
