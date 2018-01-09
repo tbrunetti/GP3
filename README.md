@@ -46,8 +46,17 @@ There are two files that are minimally required in order to run the pipeline:
 
 
 
+## Installation of virtual environment, chunkypipes, and pipeline
+------------------------------------------------------------------
+Please [click here](https://github.com/tbrunetti/GP3/blob/master/Installation_Instructions.md) for detailed instructions on setting up a virtual environment for shared systems or for installation on systems with root privledges.
+
+
 __ALREADY INSTALLED CHUNKYPIPES AND PIPELINE?__  Click [here](https://github.com/tbrunetti/GP3/blob/master/Quick_Start_FAQs.md) for quick start.
 
+
+## Questions?
+-------------
+For more information, please visit the [Wiki](https://github.com/tbrunetti/GP3/wiki) on or contact me (tbrunetti) and I would be happy to address any issues. 
 
 
 
