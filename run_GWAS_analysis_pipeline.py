@@ -38,7 +38,6 @@ class Pipeline(BasePipeline):
 		# should other input options be available??
 		parser.add_argument('-inputPLINK', required=True, type=str, help='Full path to PLINK file ending in .BED or .PED, no whitespaces in file name!')
 		parser.add_argument('-phenoFile', required=True, type=str, help='Full path to phenotype file, see argument readme for more details on format')
-		parser.add_argument('--sampleRemoval', default=None, help='Full path for samples to remove before analysis (i.e. those with sex discrepenences, poor QC, etc...) see readme for more details on format')
 		parser.add_argument('--outDir', default=os.getcwd(), type=str, help='[default=current working directory] Full path of existing directory to output results, no spaces/whitespaces!')
 		parser.add_argument('--projectName', default=str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")), type=str, help='[default=date/time stamp] Name of project, no spaces/whitespaces')
 		parser.add_argument('--startStep', default='hwe', type=str, help='[default=hwe, options: if --TGP not set -> [hwe, LD, maf, het, ibd, PCA_indi, or PCA_indi_graph] if --TGP is set ->\
@@ -212,7 +211,6 @@ class Pipeline(BasePipeline):
 				phenotype = pipeline_args['phenoFile'],
 				plinkFileName = reduced_plink_name,
 				famFile = pipeline_args['inputPLINK'][:-4] + '.fam',
-				removeSamples = pipeline_args['sampleRemoval'],
 				outDir = outdir
 				)
 
