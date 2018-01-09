@@ -25,7 +25,7 @@ __Specifiying startStep and/or endStep does not seem to work or will not allow p
     * ibd
     * outlier_removal
     * PCA_TGP (can only be used if --TGP flag is specified)
-    * PCA_TGP (can only be used if --TGP flag is specified)
+    * PCA_TGP_graph (can only be used if --TGP flag is specified)
     * PCA_indi (can only be used if --TGP flag is NOT specified)
     * PCA_indi_graph (can only be used --TGP flag is NOT specified)  
 	3.  These are used to re-run a particular step of an already created and processed project by the GP3 pipeline.  The startStep must already have all previous steps relative to the specified startStep present in the directory.  No files prior to this startStep should be removed, modified, or deleted in any way.
