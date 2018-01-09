@@ -53,7 +53,7 @@ class Pipeline(BasePipeline):
 		parser.add_argument('--windowSize', default=50, type=int, help='[default=50, options: any INT] the window size in kb for LD analysis')
 		parser.add_argument('--stepSize', default=5, type=int, help='[default=5, options: any INT] variant count to shift window after each interation')
 		parser.add_argument('--maf', default=0.05, type=float, help='[default=0.05, option: any FLOAT between 0.0-1.0], filter remaining LD pruned variants by MAF, any MAF below set threshold is filtered out')
-		parser.add_argument('--hetMethod', default='minMax', type=str, help='[default=minMax, options:  minMax or meanStd], method to use to determine heterozygosity.  minMax filter based on \
+		parser.add_argument('--hetMethod', default='meanStd', type=str, help='[default=meanStd, options:  minMax or meanStd], method to use to determine heterozygosity.  minMax filter based on \
 																			the parameters --hetThresh as the max F-inbreeding coefficient and --hetThreshMin for the minimum F-inbreeding coeffient, which \
 																			by default are 0.10 and -0.10, respectively.  The meanStd filter method calculates a het_score: \
 																			1-[observed[HOM]/total] and then filters out any samples that are more than 3 std deviations from the mean het_score. \
