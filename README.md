@@ -54,6 +54,35 @@ Please [click here](https://github.com/tbrunetti/GP3/blob/master/Installation_In
 __ALREADY INSTALLED CHUNKYPIPES AND PIPELINE?__  Click [here](https://github.com/tbrunetti/GP3/blob/master/Quick_Start_FAQs.md) for quick start.
 
 
+
+## Output Files
+---------------
+If you navigate to your output directory you should notice a new directory matching the project name you specified at the time of the run.  Navigate into this directory and you should see new directories based on the ethnic group names you specified in your sample_sheet.xlsx as well as a set of PDFs.  These PDFs are the ones promised above in the diagram. If navigate into one of the directories of your ethnic group you will notice several PLINK files that were generated at each step of the pipeline.  Addtionally, here are the notable final files of interest if the __--TGP__ flag is specified:  
+  1. <ethnic group name>_all_samples_to_remove_from_original.txt
+  2. <ethnic group name>_all_step_completed_TGP_final followed by the following suffixes:
+    * .bed
+    * .bim
+    * .fam
+    * .kin
+    * .kin0
+    * .gds
+  3. <ethnic group name>_all_step_completed_TGP_final_GENESIS.Rdata
+  4. <ethnic group name>_all_step_completed_TGP_final_phenoGENESIS.txt  
+
+If __no --TGP flag is specified__ here are the final output file names:  
+  1. <ethnic group name>_all_samples_to_remove_from_original.txt
+  2. <ethnic group name>_all_step_completed_final followed by the following suffixes:
+    * .bed
+    * .bim
+    * .fam
+    * .kin
+    * .kin0
+    * .gds
+  3. <ethnic group name>_all_step_completed_TGP_final_GENESIS.Rdata
+  4. <ethnic group name>_all_step_completed_TGP_final_phenoGENESIS.txt
+  5. <ethnic group name>_all_step_completed_final_GENESIS_sample_key_file.txt  
+
+
 ## Questions?
 -------------
 For more information, please visit the [Wiki](https://github.com/tbrunetti/GP3/wiki) on or contact me (tbrunetti) and I would be happy to address any issues. 
