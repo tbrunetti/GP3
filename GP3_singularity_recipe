@@ -1,0 +1,29 @@
+Bootstrap: debootstrap
+OSVersion: xenial
+MirrorURL: http://us.archive.ubuntu.com/ubuntu/
+Include: apt
+
+%help
+This container is built to run the GP3 repo located on github
+
+%files
+
+%post
+
+	echo "Installing all container dependencies!"
+	apt-get update
+	apt-get install python
+	apt-get install python-pip
+	echo "verifiying pip install"
+	pip -V
+	pip install chunkypipes
+	chunky init
+	pip install pandas
+	pip install numpy
+	pip install matplotlib
+	pip install fpdf
+	pip install Pillow
+	pip install pypdf2
+	pip install statistics
+	pip install xlrd
+	apt-get install r-base
