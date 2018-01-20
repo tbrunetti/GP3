@@ -7,9 +7,21 @@ Include: apt
 This container is built to run the GP3 repo located on github
 
 %files
+GP3_singularity_recipe
+LICENSE
+PCA_indi.R
+PCA_TGP.R
+run_GWAS_analysis_pipeline.py
+GENESIS_setup_ANALYSIS_PIPELINE.R
+sample_sheet_template.xlsx
+summary_stats.py
+TGP_Sub_and_SuperPopulation_info.txt
+
+%runscript
+exec /usr/bin/python "@"
+exec /usr/local/bin/chunky "@"
 
 %post
-
 	echo "Installing all container dependencies!"
 	apt-get update
 	apt-get install python
