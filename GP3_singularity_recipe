@@ -4,32 +4,42 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 Include: apt
 
 %help
-This container is built to run the GP3 repo located on github
+	This container is built to run the GP3 repo located on github
 
+%setup
+	cp run_GWAS_analysis_pipeline.py $SINGULARITY_ROOTFS
+	cp run_GWAS_analysis_pipeline.py.json $SINGULARITY_ROOTFS
+	echo $SINGULARITY_ROOTFS
+	ls $SINGULARITY_ROOTFS
 %files
-GP3_singularity_recipe
-LICENSE
-PCA_indi.R
-PCA_TGP.R
-run_GWAS_analysis_pipeline.py
-GENESIS_setup_ANALYSIS_PIPELINE.R
-sample_sheet_template.xlsx
-summary_stats.py
-TGP_Sub_and_SuperPopulation_info.txt
+	LICENSE
+	PCA_indi.R /mnt
+	PCA_TGP.R /mnt
+	run_GWAS_analysis_pipeline.py mnt
+	GENESIS_setup_ANALYSIS_PIPELINE.R /mnt
+	sample_sheet_template.xlsx /mnt
+	summary_stats.py /mnt
+	TGP_Sub_and_SuperPopulation_info.txt /mnt
+	king /mnt
+	plink /mnt
+	run_GWAS_analysis_pipeline.py.json mnt
 
 %runscript
-exec /usr/bin/python "@"
-exec /usr/local/bin/chunky "@"
+	echo "chunkypipes framework is ready!"
+	cd /mnt
+	exec /usr/local/bin/chunky "$@"
 
 %post
 	echo "Installing all container dependencies!"
-	apt-get update
-	apt-get install python
-	apt-get install python-pip
+	apt-get -y update
+	apt-get -y install software-properties-common
+	apt-add-repository universe
+	apt-get -y update
+	apt-get -y install python
+	apt-get -y install python-pip
 	echo "verifiying pip install"
 	pip -V
 	pip install chunkypipes
-	chunky init
 	pip install pandas
 	pip install numpy
 	pip install matplotlib
@@ -38,4 +48,16 @@ exec /usr/local/bin/chunky "@"
 	pip install pypdf2
 	pip install statistics
 	pip install xlrd
-	apt-get install r-base
+	apt-get -y install r-base
+	/usr/local/bin/chunky init /mnt
+	mv run_GWAS_analysis_pipeline.py /mnt/.chunky/pipelines
+	mv run_GWAS_analysis_pipeline.py.json /mnt/.chunky/configs
+	cd /mnt
+	ls
+	chmod a+rwx /mnt
+        chmod -R a+rwx /mnt/.chunky
+
+%environment
+	CHUNKY_HOME=/mnt
+	export CHUNKY_HOME
+	export PYTHONPATH="${PYTHONPATH}:/mnt/"
