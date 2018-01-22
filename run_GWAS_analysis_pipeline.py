@@ -99,7 +99,7 @@ class Pipeline(BasePipeline):
 
 	# create files to input into plink for samples to keep
 	@staticmethod
-	def ethnic_plinks_lists(phenotype, plinkFileName, famFile, removeSamples, outDir):
+	def ethnic_plinks_lists(phenotype, plinkFileName, famFile, outDir):
 		import pandas as pd
 
 		phenotype_table = pd.read_excel(phenotype, sheetname="Sheet2", header=0, converters={'FID':str, 'IID':str}) 
@@ -122,17 +122,8 @@ class Pipeline(BasePipeline):
 			os.mkdir(outDir + '/' + '_'.join(ethnic_group.split()))
 			keep_file = open(outDir + '/' + '_'.join(ethnic_group.split()) + '/' + plinkFileName +'_'+str('_'.join(ethnic_group.split())) + '_keepIDs.txt', 'w')
 			
-			if removeSamples != None:
-				removeSamples_dataframe = pd.read_table(removeSamples, delim_whitespace=True, names=['FID', 'IID'])
-				# get a list of sample IDs to remove
-				sampleIDs_remove = list(removeSamples_dataframe['IID'])
-				subset_by_race_only = merged_dataframe.loc[(merged_dataframe['Race'] == ethnic_group) & (pd.isnull(merged_dataframe['FID'].str.strip()) == False)]
-				# need to check for last part of conditional in case FID is missing, remove the row...causes problems with PLINK
-				subset_by_race = subset_by_race_only[(subset_by_race_only['IID'].isin(sampleIDs_remove) == False)]
-				
-			else:
-				# need to check for last part of conditional in case FID is missing, remove the row...causes problems with PLINK
-				subset_by_race = merged_dataframe.loc[(merged_dataframe['Race'] == ethnic_group) & (pd.isnull(merged_dataframe['FID'].str.strip()) == False)]
+			# need to check for last part of conditional in case FID is missing, remove the row...causes problems with PLINK
+			subset_by_race = merged_dataframe.loc[(merged_dataframe['Race'] == ethnic_group) & (pd.isnull(merged_dataframe['FID'].str.strip()) == False)]
 
 			subset_by_race[['FID', 'IID']].to_csv(keep_file.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
 			merged_dataframe[['FID', 'IID', 'PAT', 'MAT', 'Gender', 'Phenotype']].to_csv(famFile, sep=' ', index=False, header=False)
