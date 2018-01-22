@@ -1,0 +1,17 @@
+{
+    "king": {
+        "path": "/mnt/king"
+    }, 
+    "TGP_populations": {
+        "path": "/mnt/TGP_Sub_and_SuperPopulation_info.txt"
+    }, 
+    "R_libraries": {
+        "path": "/mnt/"
+    }, 
+    "plink": {
+        "path": "/mnt/plink"
+    }, 
+    "thousand_genomes": {
+        "path": "/mnt/.bed"
+    }
+}

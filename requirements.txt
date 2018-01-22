@@ -1,0 +1,9 @@
+chunkypipes
+pandas
+numpy
+matplotlib
+fpdf
+Pillow
+pypdf2
+statistics
+xlrd
