@@ -29,6 +29,9 @@ class Pipeline(BasePipeline):
 			'R_libraries':{
 				'path': 'Full path to directory where R libraries are stored'
 			},
+			'R':{
+				'path': 'Full path to R/Rscript executable'
+			},
 			'TGP_populations':{
 				'path': 'Full path including file name of the TGP_Sub_and_SuperPopulation_info.txt file'
 			}
@@ -615,7 +618,7 @@ class Pipeline(BasePipeline):
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 						#Popen should launch jobs in parallel
-						processes.append(subprocess.Popen(['Rscript', 'GENESIS_setup_ANALYSIS_PIPELINE.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen', phenoFiles[directories], pipeline_config['R_libraries']['path'], str(pipeline_args['pcmat'])]))
+						processes.append(subprocess.Popen([os.path.join(pipeline_config['R']['path'], 'Rscript'), 'GENESIS_setup_ANALYSIS_PIPELINE.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen', phenoFiles[directories], pipeline_config['R_libraries']['path'], str(pipeline_args['pcmat'])]))
 
 				for job in processes:
 					job.wait() # wait for all parallel jobs to finish before proceeding to next step
@@ -648,7 +651,7 @@ class Pipeline(BasePipeline):
 						else:
 							center_pop = pipeline_args['centerPop']
 						#Popen should launch jobs in parallel for producing PDFs of graphs for each cohort
-						graphing_processes.append(subprocess.Popen(['Rscript', 'PCA_TGP.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen_GENESIS', str(directories), pipeline_config['R_libraries']['path'], outdir + '/' + directories + '/',
+						graphing_processes.append(subprocess.Popen([os.path.join(pipeline_config['R']['path'], 'Rscript'), 'PCA_TGP.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen_GENESIS', str(directories), pipeline_config['R_libraries']['path'], outdir + '/' + directories + '/',
 																		pipeline_config['TGP_populations']['path'], center_pop]))
 
 				for pdfs in graphing_processes:
@@ -697,8 +700,7 @@ class Pipeline(BasePipeline):
 						remove_samples_list = list(pre_filter.difference(post_filter))
 						for fails in remove_samples_list:
 							all_samples_to_remove.write(str(fails[0]) + '\t' + str(fails[1]) + '\n')
-						print pre_filter
-						print post_filter
+
 						all_samples_to_remove.flush()
 						all_samples_to_remove.close()
 
@@ -708,7 +710,7 @@ class Pipeline(BasePipeline):
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 						#Popen should launch jobs in parallel
-						processes.append(subprocess.Popen(['Rscript', 'GENESIS_setup_ANALYSIS_PIPELINE.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed', phenoFiles[directories], pipeline_config['R_libraries']['path'], str(pipeline_args['pcmat'])]))
+						processes.append(subprocess.Popen([os.path.join(pipeline_config['R']['path'], 'Rscript'), 'GENESIS_setup_ANALYSIS_PIPELINE.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed', phenoFiles[directories], pipeline_config['R_libraries']['path'], str(pipeline_args['pcmat'])]))
 
 				for job in processes:
 					job.wait() # wait for all parallel jobs to finish before proceeding to next step
@@ -720,12 +722,16 @@ class Pipeline(BasePipeline):
 						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.bed', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.bed')
 						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.bim', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.bim')
 						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.fam', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.fam')
-						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.kin', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.kin')
 						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.kin0', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.kin0')
 						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.gds', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.gds')
 						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_GENESIS', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final_GENESIS.Rdata')
 						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_phenoGENESIS_number_ids_included.txt', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final_GENESIS_sample_key_file.txt')
 						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_phenoGENESIS.txt', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final_phenoGENESIS.txt')
+					try:
+						shutil.copyfile(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed.kin', outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.kin')
+					except IOError:
+						print("WARNING: " + outdir + '/' + directories + '/' + directories + '_all_steps_completed_final.kin')
+
 				
 				step_order.pop(0)
 		
@@ -737,7 +743,7 @@ class Pipeline(BasePipeline):
 				for directories in os.listdir(outdir):
 					if (os.path.isdir(os.path.join(outdir, directories))):
 						#Popen should launch jobs in parallel for producing PDFs of graphs for each cohort
-						graphing_processes.append(subprocess.Popen(['Rscript', 'PCA_indi.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_GENESIS', str(directories), pipeline_config['R_libraries']['path'], outdir + '/' + directories + '/']))
+						graphing_processes.append(subprocess.Popen([os.path.join(pipeline_config['R']['path'], 'Rscript'), 'PCA_indi.R', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_GENESIS', str(directories), pipeline_config['R_libraries']['path'], outdir + '/' + directories + '/']))
 
 				for pdfs in graphing_processes:
 					pdfs.wait() # wait for all parallel jobs to finish
