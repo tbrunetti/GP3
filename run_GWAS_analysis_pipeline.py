@@ -594,7 +594,7 @@ class Pipeline(BasePipeline):
 							)
 						
 						# generate phenotype table for input into GENESIS setup analysis pipeline WITHOUT 1000 genomes
-						pheno_Genesis = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen.fam', delim_whitespace=True, names = ['FID,', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'])
+						pheno_Genesis = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories +  '_maf_greater_thresh_hetFiltered_dups_removed_outliers_removed_thousGen.fam', delim_whitespace=True, names = ['FID', 'IID', 'PAT', 'MAT', 'SEX', 'AFF'])
 						pheno_Genesis[['IID', 'AFF']].to_csv(phenoFile_Genesis.name, sep='\t', index=False, header=False) # format it FID <tab> IID <new line>
 						phenoFile_Genesis.close()
 
