@@ -4,6 +4,8 @@ args <- commandArgs(trailingOnly = T)
 load_file <- args[1] # GENESIS PCA R object scanAnnot dataframe
 cohort <- args[2]
 outDir_path <- args[4]
+library("BiocGeneric", lib.loc = args[3])
+library("Biobase", lib.loc = args[3])
 library("GENESIS", lib.loc = args[3])
 library("GWASTools", lib.loc = args[3])
 
