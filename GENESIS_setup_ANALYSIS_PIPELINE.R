@@ -7,6 +7,7 @@ filePrefix <- args[1] # for KING and PLINK files
 phenoFile <- args[2] # specially designed for GENESIS (essentially the 2nd and 6th column of fam file; need full name and path)
 pcmat_num <- as.integer(args[4]) # used to calculate pcrelate
 print(pcmat_num)
+fullKin <- args[5]
 library(GWASTools, lib.loc=args[3])
 
 ###Read in Barbados genotype data for PCAs
@@ -24,10 +25,20 @@ genoData <- GenotypeData(geno)
 iids <- getScanID(genoData)
 
 ###Run PC analysis
-Kingmat <- king2mat(file.kin0=file.kin0,file.kin=NULL,type="kinship",iids = iids)
-mypcair <- pcair(genoData = genoData, kinMat = Kingmat,divMat = Kingmat, v=200)
-mypcrel <- pcrelate(genoData = genoData, pcMat = mypcair$vectors[,1:pcmat_num],training.set = mypcair$unrels)
-#pcMat is not the number of PCs you have but instead the number of different admixture populations
+#use .kin and .kin0 file
+if(fullKin == "TRUE"){
+  print("Both .kin0 and .kin will be used to generate pcair and pcrelate metrics")
+  Kingmat <- king2mat(file.kin0=file.kin0,file.kin=file.kin,type="kinship",iids = iids)
+  mypcair <- pcair(genoData = genoData, kinMat = Kingmat,divMat = Kingmat, v=200)
+  mypcrel <- pcrelate(genoData = genoData, pcMat = mypcair$vectors[,1:pcmat_num],training.set = mypcair$unrels)
+  #pcMat is not the number of PCs you have but instead the number of different admixture populations
+}else{
+  print("Only .kin0 will be used to generate pcair and pcrelate metrics")
+  Kingmat <- king2mat(file.kin0=file.kin0,file.kin=NULL,type="kinship",iids = iids)
+  mypcair <- pcair(genoData = genoData, kinMat = Kingmat,divMat = Kingmat, v=200)
+  mypcrel <- pcrelate(genoData = genoData, pcMat = mypcair$vectors[,1:pcmat_num],training.set = mypcair$unrels)
+  #pcMat is not the number of PCs you have but instead the number of different admixture populations 
+}
 
 pheno <- as.vector(as.matrix(read.table(phenoFile,header=F,na.string="NA")['V2']))
 pheno <- pheno - 1
