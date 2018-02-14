@@ -62,7 +62,7 @@ def hwe(dictHWE, thresh, outDir):
 		num_phenos = len(list(set(list(hweFile_dataframe['TEST'])))) # for use in automating number of subplots to include in figure
 		for phenotypes in list(set(list(hweFile_dataframe['TEST']))):
 			pheno_subset = hweFile_dataframe.loc[hweFile_dataframe['TEST'] == phenotypes]
-			colors = np.where(pheno_subset.P < thresh, 'r', 'k')
+			colors = np.where(pheno_subset.P < float(thresh), 'r', 'k')
 			plt.subplot(220 + num_phenos)
 			plt.scatter(pheno_subset['E(HET)'], pheno_subset['O(HET)'], c=colors, s=8)
 			plt.xlabel('expected(het)', fontsize=8)
