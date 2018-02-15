@@ -30,7 +30,7 @@ class Pipeline(BasePipeline):
 				'path': 'Full path to directory where R libraries are stored'
 			},
 			'R':{
-				'path': 'Full path to R/Rscript executable'
+				'path': 'Full path to directory where R/Rscript executable is located (if globally installed in environment, leave blank'
 			},
 			'TGP_populations':{
 				'path': 'Full path including file name of the TGP_Sub_and_SuperPopulation_info.txt file'
@@ -241,7 +241,7 @@ class Pipeline(BasePipeline):
 							Parameter('--out', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_hweFiltered')
 							)
 						
-						total_snps_analyzed_hwe = subprocess.check_output(['wc', '-l',  outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '.bim'])
+						total_snps_analyzed_hwe = subprocess.check_output(['wc', '-l',  outdir + '/' + directories + '/' + reduced_plink_name + '_snpMissFiltered_' + directories + '.bim'])
 						total_snps_passing_hwe = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_hweFiltered.bim'])
 						hwe_passing[directories] = [total_snps_analyzed_hwe.split()[0]] + [total_snps_passing_hwe.split()[0]] # store total analyzed and passing for hwe step
 						hwe_passing[directories] = hwe_passing[directories] + [outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_hweFiltered.hwe']
