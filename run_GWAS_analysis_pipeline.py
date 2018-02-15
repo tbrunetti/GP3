@@ -282,7 +282,7 @@ class Pipeline(BasePipeline):
 							general_plink.run(
 								Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered_sampleMissFiltered'),
 								Parameter('--'+pipeline_args['LDmethod'], str(pipeline_args['windowSize'])+'kb', str(pipeline_args['stepSize']), str(pipeline_args['VIF'])),
-								Parameter('--out', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories)
+								Parameter('--out', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_LDpruned')
 								)
 							
 							missingness_table = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered.imiss', delim_whitespace=True)
