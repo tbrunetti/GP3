@@ -291,13 +291,13 @@ class Pipeline(BasePipeline):
 							samples_missing.close()
 
 							total_snps_analyzed_ld = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered_sampleMissFiltered.bim'])
-							total_snps_passing_ld = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '.prune.in'])
+							total_snps_passing_ld = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_LDpruned.prune.in'])
 							ld_passing[directories] = [total_snps_analyzed_ld.split()[0]] + [total_snps_passing_ld.split()[0]] # store total analyzed and passing for LD pruning step
 							
 							# creates new PLINK files with excluded variants removed
 							general_plink.run(
 								Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered_sampleMissFiltered'),
-								Parameter('--exclude', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '.prune.out'),
+								Parameter('--exclude', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_LDpruned.prune.out'),
 								Parameter('--make-bed'),
 								Parameter('--out', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_LDpruned')
 								)
@@ -324,7 +324,7 @@ class Pipeline(BasePipeline):
 							general_plink.run(
 								Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered'),
 								Parameter(pipeline_args['LDmethod'], str(pipeline_args['windowSize'])+'kb', str(pipeline_args['stepSize']), str(pipeline_args['rsq'])),
-								Parameter('--out', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories)
+								Parameter('--out', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_LDpruned')
 								)
 
 							missingness_table = pd.read_table(outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered.imiss', delim_whitespace=True)
@@ -333,13 +333,13 @@ class Pipeline(BasePipeline):
 							samples_missing.close()
 
 							total_snps_analyzed_ld = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered_sampleMissFiltered.bim'])
-							total_snps_passing_ld = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '.prune.in'])
+							total_snps_passing_ld = subprocess.check_output(['wc', '-l', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_LDpruned.prune.in'])
 							ld_passing[directories] = [total_snps_analyzed_ld] + [total_snps_passing_ld] # store total analyzed and passing for LD pruning step
 							
 							# creates new PLINK files with excluded variants removed
 							general_plink.run(
 								Parameter('--bfile', outdir + '/' + directories + '/' + reduced_plink_name + '_' + directories + '_hweFiltered_sampleMissFiltered'),
-								Parameter('--exclude', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '.prune.out'),
+								Parameter('--exclude', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_LDpruned.prune.out'),
 								Parameter('--make-bed'),
 								Parameter('--out', outdir + '/' + directories + '/' + reduced_plink_name+ '_' + directories + '_LDpruned')
 								)
