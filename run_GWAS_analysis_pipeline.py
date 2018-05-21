@@ -615,7 +615,7 @@ class Pipeline(BasePipeline):
 				print "running PCA step"
 				
 				processes = []
-				if pipeline_args['fullKin'] == "False":
+				if pipeline_args['fullKin'] == False:
 					for directories in os.listdir(outdir):
 						if (os.path.isdir(os.path.join(outdir, directories))):
 							#Popen should launch jobs in parallel
@@ -715,7 +715,7 @@ class Pipeline(BasePipeline):
 				print "running PCA step"
 				
 				processes = []
-				if pipeline_args['fullKin'] == "False":
+				if pipeline_args['fullKin'] == False:
 					for directories in os.listdir(outdir):
 						if (os.path.isdir(os.path.join(outdir, directories))):
 						#Popen should launch jobs in parallel
